@@ -1,5 +1,6 @@
 import { Component, inject, OnInit, DestroyRef, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 import { debounceTime, distinctUntilChanged, switchMap, combineLatest, startWith, tap, catchError, of } from 'rxjs';
 import { TaskApiService, TaskFilter } from '../../shared/services/task-api.service';
 import { Task } from '../../shared/services/task.model';
@@ -7,7 +8,7 @@ import { Task } from '../../shared/services/task.model';
 @Component({
   selector: 'app-rxjs',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, CommonModule],
   template: `
     <section class="space-y-6">
       <header>
