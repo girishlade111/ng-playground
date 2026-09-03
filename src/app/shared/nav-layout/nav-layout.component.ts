@@ -109,6 +109,7 @@ export default class NavLayoutComponent {
     { path: '/di', label: 'DI' },
     { path: '/router', label: 'Router' },
     { path: '/animations', label: 'Animations' },
+    { path: '/zoneless', label: 'Zoneless' },
   ];
 
   protected toggle(): void {
