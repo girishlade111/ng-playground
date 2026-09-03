@@ -2,6 +2,7 @@ import {
   Component,
   inject,
   afterNextRender,
+  signal,
   TransferState,
   makeStateKey,
 } from '@angular/core';
@@ -67,21 +68,23 @@ const DATA_KEY = makeStateKey<{ message: string; timestamp: string }>('ssr-data'
 export default class SsrHydrationComponent {
   private transferState = inject(TransferState);
 
-  data = this.transferState.get(DATA_KEY, null);
+  data = signal<{ message: string; timestamp: string } | null>(
+    this.transferState.get(DATA_KEY, null)
+  );
 
   hydrationText = signal('Server-Rendered');
   hydrationClass = signal('bg-amber-100 text-amber-800');
   pulseClass = signal('bg-amber-500');
 
   constructor() {
-    if (this.data === null) {
+    if (this.data() === null) {
       const timestamp = new Date().toISOString();
       const payload = {
         message: 'Data fetched during SSR on the server',
         timestamp,
       };
       this.transferState.set(DATA_KEY, payload);
-      this.data = signal(payload);
+      this.data.set(payload);
     }
 
     afterNextRender(() => {

@@ -57,6 +57,11 @@ export const routes: Routes = [
     title: 'Animations · ng-playground',
   },
   {
+    path: 'zoneless',
+    loadComponent: () => import('./features/zoneless/zoneless.component'),
+    title: 'Zoneless Change Detection · ng-playground',
+  },
+  {
     path: '**',
     redirectTo: '',
   },
