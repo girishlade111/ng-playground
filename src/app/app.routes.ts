@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { accessGuard } from './shared/services/access.guard';
 
 export const routes: Routes = [
   {
@@ -50,6 +51,17 @@ export const routes: Routes = [
     path: 'router',
     loadComponent: () => import('./features/router/router.component'),
     title: 'Router · ng-playground',
+  },
+  {
+    path: 'router/protected',
+    loadComponent: () => import('./features/router/protected.component'),
+    canActivate: [accessGuard],
+    title: 'Protected Route · ng-playground',
+  },
+  {
+    path: 'router/denied',
+    loadComponent: () => import('./features/router/access-denied.component'),
+    title: 'Access Denied · ng-playground',
   },
   {
     path: 'animations',
