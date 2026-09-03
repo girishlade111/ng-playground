@@ -1,25 +1,4 @@
-<main class="min-h-screen bg-slate-50 flex items-center justify-center p-6">
-  <section class="max-w-2xl w-full bg-white shadow-lg rounded-xl p-8 space-y-4">
-    <h1 class="text-4xl font-bold text-indigo-600">ng-playground</h1>
-    <p class="text-slate-700 text-lg">
-      Angular 18 standalone components with SSR and Tailwind CSS.
-    </p>
-    <div class="flex gap-3">
-      <span class="inline-block bg-indigo-100 text-indigo-700 text-sm font-medium px-3 py-1 rounded-full">
-        Standalone
-      </span>
-      <span class="inline-block bg-emerald-100 text-emerald-700 text-sm font-medium px-3 py-1 rounded-full">
-        SSR
-      </span>
-      <span class="inline-block bg-amber-100 text-amber-700 text-sm font-medium px-3 py-1 rounded-full">
-        Tailwind
-      </span>
-    </div>
-    <a
-      href="https://angular.dev"
-      class="inline-block mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-5 py-2 rounded-lg transition-colors"
-    >
-      Learn Angular
-    </a>
-  </section>
+<app-nav-layout />
+<main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <router-outlet />
 </main>
