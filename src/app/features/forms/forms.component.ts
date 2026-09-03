@@ -1,7 +1,9 @@
-import { Component, signal } from '@angular/core';
-import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
+import { Component, signal, OnDestroy } from '@angular/core';
+import { ReactiveFormsModule, FormBuilder, Validators, FormGroup, FormArray, FormControl, AbstractControl, ValidationErrors } from '@angular/forms';
 import { FormsModule, NgForm } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { Observable, of, timer, Subject, Subscription } from 'rxjs';
+import { map, delay, debounceTime, distinctUntilChanged, switchMap, catchError, startWith } from 'rxjs/operators';
 
 @Component({
   selector: 'app-forms',
@@ -42,6 +44,24 @@ import { CommonModule } from '@angular/common';
           (click)="activeTab.set('comparison')"
         >
           Comparison
+        </button>
+        <button
+          role="tab"
+          [attr.aria-selected]="activeTab() === 'async'"
+          [class]="activeTab() === 'async' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-slate-500 hover:text-slate-700'"
+          class="px-4 py-2 border-b-2 font-medium text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+          (click)="activeTab.set('async')"
+        >
+          Async Validator
+        </button>
+        <button
+          role="tab"
+          [attr.aria-selected]="activeTab() === 'formarray'"
+          [class]="activeTab() === 'formarray' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-slate-500 hover:text-slate-700'"
+          class="px-4 py-2 border-b-2 font-medium text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+          (click)="activeTab.set('formarray')"
+        >
+          Dynamic FormArray
         </button>
       </div>
 
@@ -294,11 +314,117 @@ import { CommonModule } from '@angular/common';
           </div>
         </div>
       }
+
+      <!-- Dynamic FormArray Tab -->
+      @if (activeTab() === 'formarray') {
+        <div class="bg-white rounded-lg border border-slate-200 p-6" role="tabpanel">
+          <h2 class="text-xl font-semibold text-slate-900 mb-4">Dynamic FormArray — Skills List</h2>
+          <p class="text-slate-600 mb-6">Add/remove skill entries dynamically. Each row validates independently. Minimum 1 skill required.</p>
+
+          <form [formGroup]="skillsForm" (ngSubmit)="onSkillsSubmit()" class="space-y-4" novalidate>
+            <div formArrayName="skills">
+              @for (skill of skillsArray.controls; track skill; let i = $index) {
+                <div class="bg-slate-50 rounded-lg p-4 border border-slate-200" [formGroupName]="i">
+                  <div class="flex items-start gap-4">
+                    <div class="flex-1 space-y-4">
+                      <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                          <label [for]="'skill-name-' + i" class="block text-sm font-medium text-slate-700 mb-1">Skill Name</label>
+                          <input
+                            [id]="'skill-name-' + i"
+                            type="text"
+                            formControlName="skillName"
+                            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors"
+                            [class.border-red-500]="skill.get('skillName')?.invalid && skill.get('skillName')?.touched"
+                            [class.border-slate-300]="!(skill.get('skillName')?.invalid && skill.get('skillName')?.touched)"
+                            [attr.aria-describedby]="'skill-name-error-' + i"
+                          />
+                          @if (skill.get('skillName')?.invalid && skill.get('skillName')?.touched) {
+                            <p [id]="'skill-name-error-' + i" class="mt-1 text-sm text-red-600" role="alert">
+                              @if (skill.get('skillName')?.errors?.['required']) { Skill name is required }
+                              @if (skill.get('skillName')?.errors?.['minlength']) { Skill name must be at least 2 characters }
+                            </p>
+                          }
+                        </div>
+
+                        <div>
+                          <label [for]="'years-exp-' + i" class="block text-sm font-medium text-slate-700 mb-1">Years Experience</label>
+                          <input
+                            [id]="'years-exp-' + i"
+                            type="number"
+                            formControlName="yearsExperience"
+                            min="0"
+                            max="50"
+                            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors"
+                            [class.border-red-500]="skill.get('yearsExperience')?.invalid && skill.get('yearsExperience')?.touched"
+                            [class.border-slate-300]="!(skill.get('yearsExperience')?.invalid && skill.get('yearsExperience')?.touched)"
+                            [attr.aria-describedby]="'years-exp-error-' + i"
+                          />
+                          @if (skill.get('yearsExperience')?.invalid && skill.get('yearsExperience')?.touched) {
+                            <p [id]="'years-exp-error-' + i" class="mt-1 text-sm text-red-600" role="alert">
+                              @if (skill.get('yearsExperience')?.errors?.['required']) { Years of experience is required }
+                              @if (skill.get('yearsExperience')?.errors?.['min']) { Must be 0 or greater }
+                              @if (skill.get('yearsExperience')?.errors?.['max']) { Must be 50 or less }
+                            </p>
+                          }
+                        </div>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      (click)="removeSkill(i)"
+                      [disabled]="skillsArray.length <= 1"
+                      class="self-start px-3 py-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      [attr.aria-label]="'Remove skill ' + (i + 1)"
+                    >
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                      <span class="sr-only">Remove</span>
+                    </button>
+                  </div>
+                </div>
+              }
+            </div>
+
+            <div class="flex items-center gap-4 pt-2">
+              <button
+                type="button"
+                (click)="addSkill()"
+                class="px-6 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors"
+              >
+                <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                Add Skill
+              </button>
+              <button
+                type="submit"
+                [disabled]="skillsForm.invalid || skillsSubmitted()"
+                class="px-6 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                {{ skillsSubmitted() ? 'Submitted!' : 'Submit Skills' }}
+              </button>
+              <button
+                type="button"
+                (click)="resetSkillsForm()"
+                class="px-6 py-2 border border-slate-300 text-slate-700 rounded-lg font-medium hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 transition-colors"
+              >
+                Reset
+              </button>
+            </div>
+
+            @if (skillsSubmitted()) {
+              <div class="p-4 bg-green-50 border border-green-200 rounded-lg text-green-800" role="status">
+                <h3 class="font-medium mb-2">Submitted Skills Array:</h3>
+                <pre class="text-sm">{{ skillsFormValue() | json }}</pre>
+              </div>
+            }
+          </form>
+        </div>
+      }
     </section>
   `,
 })
 export default class FormsComponent {
-  activeTab = signal<'reactive' | 'template' | 'comparison'>('reactive');
+  activeTab = signal<'reactive' | 'template' | 'comparison' | 'async' | 'formarray'>('reactive');
   reactiveSubmitted = signal(false);
   templateSubmitted = signal(false);
   reactiveFormValue = signal<Record<string, unknown> | null>(null);

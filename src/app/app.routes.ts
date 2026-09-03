@@ -17,6 +17,11 @@ export const routes: Routes = [
     title: 'Forms · ng-playground',
   },
   {
+    path: 'reactive-forms',
+    loadComponent: () => import('./features/forms/reactive-forms-example.component'),
+    title: 'Reactive Forms Example · ng-playground',
+  },
+  {
     path: 'crud',
     loadComponent: () => import('./features/crud/crud.component'),
     title: 'CRUD · ng-playground',
