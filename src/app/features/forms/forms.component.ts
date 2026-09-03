@@ -1,9 +1,7 @@
-import { Component, signal, OnDestroy } from '@angular/core';
-import { ReactiveFormsModule, FormBuilder, Validators, FormGroup, FormArray, FormControl, AbstractControl, ValidationErrors } from '@angular/forms';
+import { Component, signal } from '@angular/core';
+import { ReactiveFormsModule, FormBuilder, Validators, FormGroup, FormArray } from '@angular/forms';
 import { FormsModule, NgForm } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Observable, of, timer, Subject, Subscription } from 'rxjs';
-import { map, delay, debounceTime, distinctUntilChanged, switchMap, catchError, startWith } from 'rxjs/operators';
 
 @Component({
   selector: 'app-forms',
