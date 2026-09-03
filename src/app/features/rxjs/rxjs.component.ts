@@ -1,234 +1,153 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  DestroyRef,
-  effect,
-  inject,
-  signal,
-} from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { interval, map, filter, tap, Subscription } from 'rxjs';
+import { Component, inject, OnInit, DestroyRef, signal } from '@angular/core';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { debounceTime, distinctUntilChanged, switchMap, combineLatest, startWith, tap, catchError, of } from 'rxjs';
+import { TaskApiService, TaskFilter } from '../../shared/services/task-api.service';
+import { Task } from '../../shared/services/task.model';
 
 @Component({
   selector: 'app-rxjs',
   standalone: true,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [ReactiveFormsModule],
   template: `
-    <section class="space-y-6 max-w-xl">
-      <h1 class="text-3xl font-bold text-indigo-600">RxJS · interval / map / filter</h1>
-      <p class="text-slate-700">
-        Live ticking counter using <code class="rounded bg-slate-100 px-1">interval()</code>,
-        <code class="rounded bg-slate-100 px-1">map()</code>, and
-        <code class="rounded bg-slate-100 px-1">filter()</code> with proper subscription cleanup.
-      </p>
+    <section class="space-y-6">
+      <header>
+        <h1 class="text-3xl font-bold text-indigo-600">RxJS</h1>
+        <p class="text-slate-700">Observables, Subjects, operators, and interop with signals (toSignal / toObservable).</p>
+      </header>
 
-      <!-- Operator Pipeline Visualization -->
-      <div class="rounded-xl bg-white p-6 shadow-md space-y-4 border border-slate-200">
-        <h2 class="text-lg font-semibold text-slate-800">Operator Pipeline</h2>
-        <div class="space-y-3 font-mono text-sm">
-          <div class="flex items-center gap-3 text-slate-600">
-            <span class="rounded-md bg-indigo-50 px-2 py-1 text-indigo-700">interval(1000)</span>
-            <span class="text-slate-400">→</span>
-            <span class="text-slate-500">Emits 0, 1, 2, 3… every 1s</span>
+      <section class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+        <h2 class="text-xl font-semibold text-slate-900 mb-4">Search with Filters (combineLatest + switchMap)</h2>
+        <p class="text-slate-600 mb-6">
+          Debounced search input combined with category filter. Uses <code class="bg-slate-100 px-1.5 py-0.5 rounded text-sm font-mono">combineLatest</code>
+          to merge streams and <code class="bg-slate-100 px-1.5 py-0.5 rounded text-sm font-mono">switchMap</code> to cancel stale requests automatically.
+        </p>
+
+        <div class="grid gap-4 md:grid-cols-2 mb-6">
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1">Search</label>
+            <input
+              type="text"
+              [formControl]="searchControl"
+              placeholder="Search tasks by title or description..."
+              class="w-full rounded-lg border border-slate-300 px-3 py-2 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none transition-colors"
+            />
           </div>
-          <div class="flex items-center gap-3 text-slate-600 pl-10">
-            <span class="rounded-md bg-emerald-50 px-2 py-1 text-emerald-700">map(x => x * 2)</span>
-            <span class="text-slate-400">→</span>
-            <span class="text-slate-500">Doubles each value: 0, 2, 4, 6…</span>
-          </div>
-          <div class="flex items-center gap-3 text-slate-600 pl-10">
-            <span class="rounded-md bg-amber-50 px-2 py-1 text-amber-700">filter(x => x % 4 === 0)</span>
-            <span class="text-slate-400">→</span>
-            <span class="text-slate-500">Keeps only multiples of 4: 0, 4, 8, 12…</span>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1">Category</label>
+            <select
+              [formControl]="categoryControl"
+              class="w-full rounded-lg border border-slate-300 px-3 py-2 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none transition-colors"
+            >
+              <option value="all">All Categories</option>
+              <option value="todo">To Do</option>
+              <option value="in-progress">In Progress</option>
+              <option value="done">Done</option>
+            </select>
           </div>
         </div>
-      </div>
 
-      <!-- Live Ticker Display -->
-      <div class="rounded-xl bg-white p-6 shadow-md space-y-5 border border-slate-200">
-        <h2 class="text-lg font-semibold text-slate-800">Live Output</h2>
-
-        <div class="text-center">
-          <div class="text-sm uppercase tracking-wide text-slate-500">Current Value</div>
-          <div
-            data-testid="ticker-value"
-            class="mt-2 text-7xl font-bold tabular-nums text-indigo-600 transition-colors duration-200"
-            [class.text-emerald-600]="isEven()"
-            [class.text-amber-600]="!isEven() && value() !== 0"
+        <div class="flex items-center gap-4 mb-4">
+          <span
+            [class]="loading() ? 'inline-flex items-center gap-2 text-indigo-600' : 'inline-flex items-center gap-2 text-slate-400'"
           >
-            {{ value() }}
-          </div>
-          <div class="mt-2 text-sm text-slate-500">
-            @if (isRunning()) {
-              <span class="inline-flex items-center gap-1 text-emerald-600">
-                <span class="relative flex h-2 w-2">
-                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                </span>
-                Running
-              </span>
+            @if (loading()) {
+              <svg class="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" fill="none" />
+                <path class="opacity-75" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" fill="currentColor" />
+              </svg>
+              <span>Loading...</span>
             } @else {
-              <span class="text-slate-400">Stopped</span>
+              <span>Ready</span>
             }
-          </div>
-        </div>
-
-        <div class="flex flex-wrap gap-2 justify-center">
-          <button
-            type="button"
-            (click)="start()"
-            [disabled]="isRunning()"
-            class="rounded-lg bg-emerald-600 px-4 py-2 font-medium text-white hover:bg-emerald-700 active:bg-emerald-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
-            Start
-          </button>
-          <button
-            type="button"
-            (click)="stop()"
-            [disabled]="!isRunning()"
-            class="rounded-lg bg-rose-600 px-4 py-2 font-medium text-white hover:bg-rose-700 active:bg-rose-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
-            Stop
-          </button>
-          <button
-            type="button"
-            (click)="reset()"
-            class="rounded-lg bg-slate-200 px-4 py-2 font-medium text-slate-700 hover:bg-slate-300 active:bg-slate-400 transition-colors"
-          >
-            Reset
-          </button>
-        </div>
-
-        <div class="rounded-md bg-slate-50 px-3 py-2 text-xs text-slate-600">
-          <strong>Subscription status:</strong>
-          <span class="ml-2" [class.text-emerald-600]="isRunning()" [class.text-rose-600]="!isRunning()">
-            {{ isRunning() ? 'Active (subscribed)' : 'Inactive (unsubscribed)' }}
           </span>
+          <span class="text-sm text-slate-500">Results: {{ filteredTasks().length }}</span>
         </div>
-      </div>
 
-      <!-- Emission Log -->
-      <div class="rounded-xl bg-white p-6 shadow-md border border-slate-200">
-        <div class="flex items-center justify-between mb-3">
-          <h2 class="text-lg font-semibold text-slate-800">Emission Log (last 10)</h2>
-          <button
-            type="button"
-            (click)="clearLog()"
-            class="rounded bg-slate-200 px-2 py-1 text-xs font-medium text-slate-700 hover:bg-slate-300 active:bg-slate-400 transition-colors"
-          >
-            Clear log
-          </button>
-        </div>
-        <div
-          data-testid="emission-log"
-          class="max-h-48 overflow-y-auto rounded-md border border-slate-200 bg-slate-50 p-2 text-xs font-mono text-slate-700 space-y-1"
-        >
-          @if (log().length === 0) {
-            <div class="text-slate-400 italic px-1">No emissions yet — click Start</div>
+        @if (error()) {
+          <div class="mb-4 rounded-lg bg-red-50 border border-red-200 p-4 text-red-700">
+            {{ error() }}
+          </div>
+        }
+
+        <div class="rounded-lg border border-slate-200 bg-slate-50 max-h-96 overflow-auto">
+          @if (filteredTasks().length === 0 && !loading()) {
+            <div class="p-8 text-center text-slate-500">No tasks found</div>
           } @else {
-            @for (entry of log(); track $index) {
-              <div class="flex gap-3">
-                <span class="shrink-0 text-slate-400 tabular-nums">{{ entry.time }}</span>
-                <span class="shrink-0 text-slate-500">{{ entry.operator }}</span>
-                <span class="text-slate-800">{{ entry.value }}</span>
-              </div>
-            }
+            <ul class="divide-y divide-slate-200">
+              @for (task of filteredTasks(); track task.id) {
+                <li class="p-4 hover:bg-white transition-colors">
+                  <div class="flex items-start gap-3">
+                    <span
+                      class="inline-flex items-center justify-center w-2 h-2 mt-2 rounded-full"
+                      [class.bg-green-500]="task.status === 'done'"
+                      [class.bg-yellow-500]="task.status === 'in-progress'"
+                      [class.bg-slate-400]="task.status === 'todo'"
+                    ></span>
+                    <div class="flex-1 min-w-0">
+                      <h3 class="font-medium text-slate-900 truncate">{{ task.title }}</h3>
+                      <p class="text-sm text-slate-500 mt-0.5 truncate">{{ task.description }}</p>
+                      <div class="flex items-center gap-2 mt-2">
+                        <span class="text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 capitalize">{{ task.status }}</span>
+                        <span class="text-xs text-slate-400">{{ task.createdAt | date: 'shortDate' }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              }
+            </ul>
           }
         </div>
-      </div>
-
-      <!-- Cleanup Verification -->
-      <div class="rounded-xl bg-white p-6 shadow-md border border-slate-200">
-        <h2 class="text-lg font-semibold text-slate-800 mb-3">Subscription Cleanup Verification</h2>
-        <div class="space-y-2 text-sm text-slate-700">
-          <div class="flex items-center gap-2">
-            <span class="rounded-full h-2 w-2 bg-emerald-500"></span>
-            <span>Uses <code class="rounded bg-slate-100 px-1">takeUntilDestroyed()</code> for automatic cleanup on component destroy</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <span class="rounded-full h-2 w-2 bg-emerald-500"></span>
-            <span>Manual <code class="rounded bg-slate-100 px-1">unsubscribe()</code> on Stop/Reset via <code class="rounded bg-slate-100 px-1">Subscription</code></span>
-          </div>
-          <div class="flex items-center gap-2">
-            <span class="rounded-full h-2 w-2 bg-emerald-500"></span>
-            <span>No memory leaks — verified via <code class="rounded bg-slate-100 px-1">DestroyRef</code></span>
-          </div>
-        </div>
-      </div>
+      </section>
     </section>
   `,
 })
-export default class RxjsComponent {
-  private readonly destroyRef = inject(DestroyRef);
+export default class RxjsComponent implements OnInit {
+  private taskApi = inject(TaskApiService);
+  private destroyRef = inject(DestroyRef);
 
-  protected readonly value = signal(0);
-  protected readonly isRunning = signal(false);
-  protected readonly log = signal<
-    readonly { time: string; operator: string; value: string }[]
-  >([]);
+  searchControl = new FormControl('', { nonNullable: true });
+  categoryControl = new FormControl<'all' | 'todo' | 'in-progress' | 'done'>('all', { nonNullable: true });
 
-  private subscription?: Subscription;
+  filteredTasks = signal<Task[]>([]);
+  loading = signal(false);
+  error = signal<string | null>(null);
 
-  protected isEven = signal(true);
+  ngOnInit(): void {
+    const search$ = this.searchControl.valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      distinctUntilChanged(),
+      tap(() => {
+        this.loading.set(true);
+        this.error.set(null);
+      })
+    );
 
-  constructor() {
-    // Verify cleanup on destroy
-    effect(() => {
-      const _ = this.destroyRef;
+    const category$ = this.categoryControl.valueChanges.pipe(
+      startWith('all' as const),
+      tap(() => {
+        this.loading.set(true);
+        this.error.set(null);
+      })
+    );
+
+    const filter$ = combineLatest([search$, category$]).pipe(
+      switchMap(([search, category]) => {
+        const filter: TaskFilter = { search, category: category === 'all' ? undefined : category };
+        return this.taskApi.getFiltered(filter).pipe(
+          catchError((err) => {
+            this.error.set(err.message);
+            return of([] as Task[]);
+          }),
+          tap(() => this.loading.set(false))
+        );
+      })
+    );
+
+    const subscription = filter$.subscribe((tasks) => {
+      this.filteredTasks.set(tasks);
     });
-  }
 
-  protected start(): void {
-    if (this.isRunning() || this.subscription?.closed === false) {
-      return;
-    }
-
-    this.isRunning.set(true);
-    this.log.set([]);
-
-    this.subscription = interval(1000)
-      .pipe(
-        tap((x) => this.addLog('interval', x)),
-        map((x) => x * 2),
-        tap((x) => this.addLog('map (×2)', x)),
-        filter((x) => x % 4 === 0),
-        tap((x) => this.addLog('filter (%4===0)', x)),
-        takeUntilDestroyed(this.destroyRef),
-      )
-      .subscribe({
-        next: (v) => {
-          this.value.set(v);
-          this.isEven.set(v % 2 === 0);
-        },
-        complete: () => {
-          this.isRunning.set(false);
-          this.subscription = undefined;
-        },
-      });
-  }
-
-  protected stop(): void {
-    this.subscription?.unsubscribe();
-    this.subscription = undefined;
-    this.isRunning.set(false);
-  }
-
-  protected reset(): void {
-    this.stop();
-    this.value.set(0);
-    this.isEven.set(true);
-    this.log.set([]);
-  }
-
-  protected clearLog(): void {
-    this.log.set([]);
-  }
-
-  private addLog(operator: string, val: number): void {
-    const time = new Date().toISOString().slice(11, 23);
-    this.log.update((current) => {
-      const next = [...current, { time, operator, value: String(val) }];
-      return next.length > 10 ? next.slice(next.length - 10) : next;
-    });
+    this.destroyRef.onDestroy(() => subscription.unsubscribe());
   }
 }
