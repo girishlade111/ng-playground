@@ -112,8 +112,8 @@ class RootConfigDisplayComponent {}
         <h3 class="font-semibold text-slate-800 mb-3">How it works</h3>
         <ol class="space-y-2 text-slate-700 list-decimal list-inside">
           <li><code>APP_CONFIG</code> token defined with <code>providedIn: 'root'</code> and factory for defaults</li>
-          <li>Parent component adds <code>providers: [{ provide: APP_CONFIG, useValue: {{ '{' }}...{{ '}' }} }]</code> &mdash; creates new injector level</li>
-          <li>Child component adds its own <code>providers</code> array &mdash; creates another injector level</li>
+          <li>Parent component adds provider to override <code>APP_CONFIG</code> &mdash; creates new injector level</li>
+          <li>Child component adds its own provider &mdash; creates another injector level</li>
           <li>Each <code>ConfigDisplayComponent</code> injects <code>APP_CONFIG</code> &mdash; resolves to nearest provider in hierarchy</li>
         </ol>
       </div>
