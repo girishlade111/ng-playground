@@ -172,9 +172,9 @@ export default class RxjsComponent {
   protected isEven = signal(true);
 
   constructor() {
-    // Verify cleanup on destroy
+    // Verify cleanup on destroy - effect ensures DestroyRef is tracked
     effect(() => {
-      const _ = this.destroyRef;
+      this.destroyRef;
     });
   }
 
