@@ -3,6 +3,7 @@ import {
   Component,
   computed,
   effect,
+  linkedSignal,
   signal,
 } from '@angular/core';
 
@@ -169,6 +170,93 @@ import {
                 </div>
               }
             }
+          </div>
+        </div>
+      </div>
+
+      <h2 class="text-2xl font-bold text-indigo-600 pt-4">
+        Signals · <code class="rounded bg-slate-100 px-1 text-base">linkedSignal()</code> &amp; Signal Forms
+      </h2>
+      <p class="text-slate-700">
+        <code class="rounded bg-slate-100 px-1">linkedSignal()</code> keeps a writable
+        signal in sync with a source: the shipping selection resets to a valid default
+        whenever the country changes. Below that, a plain signal is bound directly to an
+        <code class="rounded bg-slate-100 px-1">&lt;input&gt;</code> with no
+        <code class="rounded bg-slate-100 px-1">FormsModule</code>.
+      </p>
+
+      <div class="rounded-xl bg-white p-6 shadow-md space-y-5">
+        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <label class="block text-sm">
+            <span class="font-medium text-slate-700">Country</span>
+            <select
+              data-testid="country"
+              [value]="country()"
+              (change)="country.set($any($event.target).value)"
+              class="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-800 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            >
+              @for (c of countries; track c.code) {
+                <option [value]="c.code">{{ c.name }}</option>
+              }
+            </select>
+          </label>
+          <label class="block text-sm">
+            <span class="font-medium text-slate-700">Shipping option</span>
+            <select
+              data-testid="shipping"
+              [value]="shipping()"
+              (change)="shipping.set($any($event.target).value)"
+              class="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-800 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            >
+              @for (opt of availableShipping(); track opt.id) {
+                <option [value]="opt.id">{{ opt.label }}</option>
+              }
+            </select>
+          </label>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 text-sm">
+          <div class="rounded-md bg-slate-50 px-3 py-2">
+            <div class="text-slate-500">Country (source)</div>
+            <div class="font-semibold text-slate-800" data-testid="country-display">{{ countryLabel() }}</div>
+          </div>
+          <div class="rounded-md bg-slate-50 px-3 py-2">
+            <div class="text-slate-500">Shipping (linked)</div>
+            <div class="font-semibold text-slate-800" data-testid="shipping-display">{{ shippingLabel() }}</div>
+          </div>
+        </div>
+
+        <div class="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+          Change the country — the shipping selection automatically resets to the first
+          valid option for the new country because it is a <code class="rounded bg-amber-100 px-1">linkedSignal()</code>.
+        </div>
+
+        <hr class="border-slate-200" />
+
+        <div class="space-y-3">
+          <label class="block text-sm">
+            <span class="font-medium text-slate-700">Display name (signal-bound input)</span>
+            <input
+              type="text"
+              data-testid="display-name"
+              [value]="displayName()"
+              (input)="displayName.set($any($event.target).value)"
+              class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-slate-800 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              placeholder="Type here…"
+            />
+          </label>
+          <div class="rounded-md bg-slate-50 px-3 py-2">
+            <div class="text-sm text-slate-500">Live preview (signal value)</div>
+            <div
+              data-testid="display-name-preview"
+              class="font-semibold text-slate-800 text-lg tabular-nums"
+            >
+              {{ displayName() || '(empty)' }}
+            </div>
+          </div>
+          <div class="text-xs text-slate-500">
+            Length: <span data-testid="display-name-length" class="font-mono text-slate-700">{{ displayName().length }}</span>
+            · Uppercased: <span data-testid="display-name-upper" class="font-mono text-slate-700">{{ displayName().toUpperCase() }}</span>
           </div>
         </div>
       </div>
