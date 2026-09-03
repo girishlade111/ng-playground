@@ -427,10 +427,13 @@ export default class FormsComponent {
   activeTab = signal<'reactive' | 'template' | 'comparison' | 'async' | 'formarray'>('reactive');
   reactiveSubmitted = signal(false);
   templateSubmitted = signal(false);
+  skillsSubmitted = signal(false);
   reactiveFormValue = signal<Record<string, unknown> | null>(null);
   templateFormValue = signal<Record<string, unknown> | null>(null);
+  skillsFormValue = signal<Record<string, unknown> | null>(null);
 
   reactiveForm: FormGroup;
+  skillsForm: FormGroup;
   templateModel = { name: '', email: '', password: '' };
 
   constructor(private fb: FormBuilder) {
@@ -470,6 +473,25 @@ export default class FormsComponent {
     if (this.skillsArray.length > 1) {
       this.skillsArray.removeAt(index);
     }
+  }
+
+  onSkillsSubmit(): void {
+    if (this.skillsForm.valid) {
+      this.skillsFormValue.set(this.skillsForm.value);
+      this.skillsSubmitted.set(true);
+    } else {
+      this.skillsForm.markAllAsTouched();
+      this.skillsArray.controls.forEach(control => control.markAllAsTouched());
+    }
+  }
+
+  resetSkillsForm(): void {
+    while (this.skillsArray.length > 1) {
+      this.skillsArray.removeAt(0);
+    }
+    this.skillsArray.at(0).reset();
+    this.skillsSubmitted.set(false);
+    this.skillsFormValue.set(null);
   }
 
   onReactiveSubmit(): void {
