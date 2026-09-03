@@ -171,13 +171,6 @@ export default class RxjsComponent {
 
   protected isEven = signal(true);
 
-  constructor() {
-    // Verify cleanup on destroy - effect ensures DestroyRef is tracked
-    effect(() => {
-      this.destroyRef;
-    });
-  }
-
   protected start(): void {
     if (this.isRunning() || this.subscription?.closed === false) {
       return;
