@@ -3,7 +3,6 @@ import {
   Component,
   computed,
   effect,
-  linkedSignal,
   signal,
 } from '@angular/core';
 
@@ -322,6 +321,70 @@ export default class SignalsComponent {
       ]);
     });
   }
+
+  protected clearLog(): void {
+    this.log.set([]);
+  }
+
+protected readonly countries = [
+    { code: 'US', name: 'United States' },
+    { code: 'CA', name: 'Canada' },
+    { code: 'MX', name: 'Mexico' },
+  ] as const;
+
+  protected readonly country = signal('US');
+
+  protected readonly availableShipping = computed(() =>
+    this.country() === 'US'
+      ? [
+          { id: 'us-standard', label: 'Standard (3–5 days)' },
+          { id: 'us-express', label: 'Express (1–2 days)' },
+          { id: 'us-overnight', label: 'Overnight' },
+        ]
+      : this.country() === 'CA'
+        ? [
+            { id: 'ca-standard', label: 'Standard (5–7 days)' },
+            { id: 'ca-express', label: 'Express (2–3 days)' },
+          ]
+        : [
+            { id: 'mx-standard', label: 'Estándar (4–6 días)' },
+            { id: 'mx-express', label: 'Exprés (1–2 días)' },
+          ],
+  );
+
+  protected readonly shipping = signal('');
+
+  constructor() {
+    // linkedSignal pattern (manual in Angular 18): reset shipping when country changes
+    effect(() => {
+      const options = this.availableShipping();
+      this.shipping.set(options[0]?.id ?? '');
+    });
+
+    // linkedSignal pattern for fullName effect (existing)
+    let firstRun = true;
+    effect(() => {
+      const value = this.fullName();
+      if (firstRun) {
+        firstRun = false;
+        return;
+      }
+      this.log.update((current) => [
+        ...current,
+        { timestamp: new Date().toISOString().slice(11, 23), value },
+      ]);
+    });
+  }
+
+  protected readonly countryLabel = computed(() =>
+    this.countries.find((c) => c.code === this.country())?.name ?? '',
+  );
+
+  protected readonly shippingLabel = computed(() =>
+    this.availableShipping().find((o) => o.id === this.shipping())?.label ?? '',
+  );
+
+  protected readonly displayName = signal('');
 
   protected clearLog(): void {
     this.log.set([]);
