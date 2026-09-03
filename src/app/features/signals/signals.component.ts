@@ -1,4 +1,10 @@
-import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  signal,
+} from '@angular/core';
 
 @Component({
   selector: 'app-signals',
@@ -89,6 +95,83 @@ import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/c
           </ol>
         </details>
       </div>
+
+      <h2 class="text-2xl font-bold text-indigo-600 pt-4">
+        Signals · Derived State (<code class="rounded bg-slate-100 px-1 text-base">computed()</code> + <code class="rounded bg-slate-100 px-1 text-base">effect()</code>)
+      </h2>
+      <p class="text-slate-700">
+        Two input signals drive a <code class="rounded bg-slate-100 px-1">computed()</code>
+        full name. An <code class="rounded bg-slate-100 px-1">effect()</code> appends a
+        timestamped log entry whenever the derived value changes.
+      </p>
+
+      <div class="rounded-xl bg-white p-6 shadow-md space-y-5">
+        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <label class="block text-sm">
+            <span class="font-medium text-slate-700">First name</span>
+            <input
+              type="text"
+              data-testid="first-name"
+              [value]="firstName()"
+              (input)="firstName.set($any($event.target).value)"
+              class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-slate-800 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              placeholder="Ada"
+            />
+          </label>
+          <label class="block text-sm">
+            <span class="font-medium text-slate-700">Last name</span>
+            <input
+              type="text"
+              data-testid="last-name"
+              [value]="lastName()"
+              (input)="lastName.set($any($event.target).value)"
+              class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-slate-800 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              placeholder="Lovelace"
+            />
+          </label>
+        </div>
+
+        <div class="rounded-md bg-slate-50 px-3 py-2">
+          <div class="text-sm text-slate-500">Full name (computed)</div>
+          <div
+            data-testid="full-name"
+            class="font-semibold text-slate-800 text-lg tabular-nums"
+          >
+            {{ fullName() }}
+          </div>
+        </div>
+
+        <div>
+          <div class="mb-2 flex items-center justify-between">
+            <div class="text-sm font-medium text-slate-700">
+              Effect log (timestamped)
+            </div>
+            <button
+              type="button"
+              (click)="clearLog()"
+              class="rounded bg-slate-200 px-2 py-1 text-xs font-medium text-slate-700 hover:bg-slate-300 active:bg-slate-400 transition-colors"
+            >
+              Clear log
+            </button>
+          </div>
+          <div
+            data-testid="effect-log"
+            class="max-h-56 overflow-y-auto rounded-md border border-slate-200 bg-slate-50 p-2 text-xs font-mono text-slate-700 space-y-1"
+          >
+            @if (log().length === 0) {
+              <div class="text-slate-400 italic px-1">No entries yet — edit a field above.</div>
+            } @else {
+              @for (entry of log(); track $index) {
+                <div class="flex gap-3">
+                  <span class="shrink-0 text-slate-400 tabular-nums">{{ entry.timestamp }}</span>
+                  <span class="shrink-0 text-slate-500">fullName</span>
+                  <span class="text-slate-800">→ {{ entry.value }}</span>
+                </div>
+              }
+            }
+          </div>
+        </div>
+      </div>
     </section>
   `,
 })
@@ -124,5 +207,35 @@ export default class SignalsComponent {
       const next = [...current, this.count()];
       return next.length > 10 ? next.slice(next.length - 10) : next;
     });
+  }
+
+  protected readonly firstName = signal('Ada');
+  protected readonly lastName = signal('Lovelace');
+
+  protected readonly fullName = computed(
+    () => `${this.firstName()} ${this.lastName()}`.trim(),
+  );
+
+  protected readonly log = signal<readonly { timestamp: string; value: string }[]>(
+    [],
+  );
+
+  constructor() {
+    let firstRun = true;
+    effect(() => {
+      const value = this.fullName();
+      if (firstRun) {
+        firstRun = false;
+        return;
+      }
+      this.log.update((current) => [
+        ...current,
+        { timestamp: new Date().toISOString().slice(11, 23), value },
+      ]);
+    });
+  }
+
+  protected clearLog(): void {
+    this.log.set([]);
   }
 }
