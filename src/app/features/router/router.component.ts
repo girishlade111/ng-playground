@@ -147,6 +147,4 @@ import { AccessControlService } from '../../shared/services/access-control.servi
 })
 export default class RouterComponent {
   protected readonly accessControl = inject(AccessControlService);
-  protected readonly signalType = 'signal<boolean>';
 }
-
