@@ -8,7 +8,8 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "serve:ssr:ng-playground": "node dist/ng-playground/server/server.mjs",
-    "lint": "ng lint"
+    "lint": "ng lint",
+    "format": "prettier --write \"src/**/*.{ts,html,css,md,json}\""
   },
   "private": true,
   "dependencies": {
