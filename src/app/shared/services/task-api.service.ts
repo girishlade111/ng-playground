@@ -1,7 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
-import { delay } from 'rxjs/operators';
+import { delay, map } from 'rxjs/operators';
 import { Task } from './task.model';
+
+export interface TaskFilter {
+  search?: string;
+  category?: string;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -84,6 +89,31 @@ export class TaskApiService {
       return throwError(() => new Error('Failed to fetch tasks. Please try again.')).pipe(delay(delayMs));
     }
     return of([...this.tasks]).pipe(delay(delayMs));
+  }
+
+  getFiltered(filter: TaskFilter): Observable<Task[]> {
+    const delayMs = this.simulateDelay();
+    if (this.shouldSimulateError()) {
+      return throwError(() => new Error('Failed to fetch filtered tasks. Please try again.')).pipe(delay(delayMs));
+    }
+    return of([...this.tasks]).pipe(
+      delay(delayMs),
+      map((tasks) => {
+        let filtered = tasks;
+        if (filter.search && filter.search.trim()) {
+          const searchLower = filter.search.toLowerCase().trim();
+          filtered = filtered.filter(
+            (task) =>
+              task.title.toLowerCase().includes(searchLower) ||
+              task.description.toLowerCase().includes(searchLower)
+          );
+        }
+        if (filter.category && filter.category !== 'all') {
+          filtered = filtered.filter((task) => task.status === filter.category);
+        }
+        return filtered;
+      })
+    );
   }
 
   getById(id: string): Observable<Task> {
