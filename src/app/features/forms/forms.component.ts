@@ -443,6 +443,33 @@ export default class FormsComponent {
         Validators.pattern('(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+')
       ]],
     });
+
+    this.skillsForm = this.fb.group({
+      skills: this.fb.array([
+        this.createSkillGroup()
+      ])
+    });
+  }
+
+  get skillsArray(): FormArray {
+    return this.skillsForm.get('skills') as FormArray;
+  }
+
+  private createSkillGroup(): FormGroup {
+    return this.fb.group({
+      skillName: ['', [Validators.required, Validators.minLength(2)]],
+      yearsExperience: ['', [Validators.required, Validators.min(0), Validators.max(50)]]
+    });
+  }
+
+  addSkill(): void {
+    this.skillsArray.push(this.createSkillGroup());
+  }
+
+  removeSkill(index: number): void {
+    if (this.skillsArray.length > 1) {
+      this.skillsArray.removeAt(index);
+    }
   }
 
   onReactiveSubmit(): void {
