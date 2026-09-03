@@ -34,5 +34,6 @@ export default class HomeComponent {
     { path: '/di', label: 'DI' },
     { path: '/router', label: 'Router' },
     { path: '/animations', label: 'Animations' },
+    { path: '/zoneless', label: 'Zoneless' },
   ] as const;
 }
