@@ -32,6 +32,11 @@ export const routes: Routes = [
     title: 'SSR @defer · ng-playground',
   },
   {
+    path: 'ssr',
+    loadComponent: () => import('./features/ssr-hydration/ssr-hydration.component'),
+    title: 'SSR Hydration · ng-playground',
+  },
+  {
     path: 'rxjs',
     loadComponent: () => import('./features/rxjs/rxjs.component'),
     title: 'RxJS · ng-playground',
