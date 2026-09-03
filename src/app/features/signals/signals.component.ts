@@ -173,14 +173,17 @@ import {
         </div>
       </div>
 
-      <h2 class="text-2xl font-bold text-indigo-600 pt-4">
-        Signals · <code class="rounded bg-slate-100 px-1 text-base">linkedSignal()</code> &amp; Signal Forms
+<h2 class="text-2xl font-bold text-indigo-600 pt-4">
+        Signals · <code class="rounded bg-slate-100 px-1 text-base">linkedSignal()</code> Pattern & Signal Forms
       </h2>
       <p class="text-slate-700">
-        <code class="rounded bg-slate-100 px-1">linkedSignal()</code> keeps a writable
-        signal in sync with a source: the shipping selection resets to a valid default
-        whenever the country changes. Below that, a plain signal is bound directly to an
-        <code class="rounded bg-slate-100 px-1">&lt;input&gt;</code> with no
+        <code class="rounded bg-slate-100 px-1">linkedSignal()</code> (Angular 19+) keeps a
+        writable signal in sync with a source. This demo shows the manual pattern using
+        <code class="rounded bg-slate-100 px-1">signal()</code> +
+        <code class="rounded bg-slate-100 px-1">effect()</code>: the shipping
+        selection resets to a valid default whenever the country changes. Below that, a
+        plain signal is bound directly to an
+        <code class="rounded bg-slate-100 px-1"><input></code> with no
         <code class="rounded bg-slate-100 px-1">FormsModule</code>.
       </p>
 
@@ -227,7 +230,8 @@ import {
 
         <div class="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
           Change the country — the shipping selection automatically resets to the first
-          valid option for the new country because it is a <code class="rounded bg-amber-100 px-1">linkedSignal()</code>.
+          valid option for the new country. This is the <code class="rounded bg-amber-100 px-1">signal() + effect()</code> pattern
+          (<code class="rounded bg-slate-100 px-1">linkedSignal()</code> in Angular 19+).
         </div>
 
         <hr class="border-slate-200" />
