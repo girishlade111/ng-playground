@@ -311,26 +311,7 @@ export default class SignalsComponent {
     [],
   );
 
-  constructor() {
-    let firstRun = true;
-    effect(() => {
-      const value = this.fullName();
-      if (firstRun) {
-        firstRun = false;
-        return;
-      }
-      this.log.update((current) => [
-        ...current,
-        { timestamp: new Date().toISOString().slice(11, 23), value },
-      ]);
-    });
-  }
-
-  protected clearLog(): void {
-    this.log.set([]);
-  }
-
-protected readonly countries = [
+  protected readonly countries = [
     { code: 'US', name: 'United States' },
     { code: 'CA', name: 'Canada' },
     { code: 'MX', name: 'Mexico' },
@@ -358,6 +339,16 @@ protected readonly countries = [
 
   protected readonly shipping = signal('');
 
+  protected readonly countryLabel = computed(() =>
+    this.countries.find((c) => c.code === this.country())?.name ?? '',
+  );
+
+  protected readonly shippingLabel = computed(() =>
+    this.availableShipping().find((o) => o.id === this.shipping())?.label ?? '',
+  );
+
+  protected readonly displayName = signal('');
+
   constructor() {
     // linkedSignal pattern (manual in Angular 18): reset shipping when country changes
     effect(() => {
@@ -365,7 +356,7 @@ protected readonly countries = [
       this.shipping.set(options[0]?.id ?? '');
     });
 
-    // linkedSignal pattern for fullName effect (existing)
+    // fullName effect for log
     let firstRun = true;
     effect(() => {
       const value = this.fullName();
@@ -379,16 +370,6 @@ protected readonly countries = [
       ]);
     });
   }
-
-  protected readonly countryLabel = computed(() =>
-    this.countries.find((c) => c.code === this.country())?.name ?? '',
-  );
-
-  protected readonly shippingLabel = computed(() =>
-    this.availableShipping().find((o) => o.id === this.shipping())?.label ?? '',
-  );
-
-  protected readonly displayName = signal('');
 
   protected clearLog(): void {
     this.log.set([]);
