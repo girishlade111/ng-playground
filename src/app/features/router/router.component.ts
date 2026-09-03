@@ -110,7 +110,7 @@ import { AccessControlService } from '../../shared/services/access-control.servi
           <div class="flex items-start gap-2">
             <span class="text-indigo-600 font-mono text-xs mt-0.5">1.</span>
             <span>
-              <strong>AccessControlService</strong> holds a <code class="bg-slate-100 px-1.5 py-0.5 rounded">{{ signalType }}</code>
+              <strong>AccessControlService</strong> holds a <code class="bg-slate-100 px-1.5 py-0.5 rounded">signal<boolean></code>
               for access state
             </span>
           </div>
@@ -149,3 +149,4 @@ export default class RouterComponent {
   protected readonly accessControl = inject(AccessControlService);
   protected readonly signalType = 'signal<boolean>';
 }
+
