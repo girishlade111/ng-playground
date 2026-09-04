@@ -3,7 +3,6 @@ import { NgClass } from '@angular/common';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { filter, map, startWith } from 'rxjs/operators';
-import { DarkModeService } from '../../core/services/dark-mode.service';
 
 interface NavItem {
   readonly path: string;
