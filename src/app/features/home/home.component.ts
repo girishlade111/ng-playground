@@ -130,11 +130,11 @@ interface FeatureCard {
       </div>
     </section>
 
-    <!-- product-tile-dark-2: editorial close -->
-    <section class="tile tile-dark-2">
+    <!-- product-tile-parchment-2: editorial close -->
+    <section class="tile tile-parchment">
       <div class="mx-auto max-w-[980px] px-6 text-center">
-        <p class="text-[14px] font-semibold leading-[1.29] tracking-[-0.224px] text-[#cccccc]">Start with data</p>
-        <h2 class="mx-auto mt-3 max-w-2xl font-display text-[34px] font-semibold leading-[1.1] text-white sm:text-[40px]">
+        <p class="text-[14px] font-semibold leading-[1.29] tracking-[-0.224px] text-action">Start with data</p>
+        <h2 class="mx-auto mt-3 max-w-2xl font-display text-[34px] font-semibold leading-[1.1] text-ink sm:text-[40px]">
           CRUD, with optimistic updates and honest errors.
         </h2>
         <div class="mt-8">
