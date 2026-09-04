@@ -173,14 +173,23 @@ import { ToastService } from '../../core/services/toast.service';
 export default class CrudComponent implements OnInit {
   private readonly taskApi = inject(TaskApiService);
   private readonly fb = inject(FormBuilder);
+  private readonly toast = inject(ToastService);
 
   protected readonly tasks = signal<Task[]>([]);
   protected readonly loading = signal(false);
   protected readonly creating = signal(false);
   protected readonly deleting = signal<string | null>(null);
+  protected readonly editing = signal<string | null>(null);
   protected readonly error = signal<string | null>(null);
 
   protected readonly createForm = this.fb.nonNullable.group({
+    title: ['', [Validators.required, Validators.maxLength(100)]],
+    description: [''],
+    status: ['todo' as const],
+  });
+
+  protected readonly editing = signal<string | null>(null);
+  protected readonly editForm = this.fb.nonNullable.group({
     title: ['', [Validators.required, Validators.maxLength(100)]],
     description: [''],
     status: ['todo' as const],
