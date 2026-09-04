@@ -8,8 +8,8 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { interval, map, filter, tap, Subscription, combineLatest, switchMap, startWith, debounceTime, distinctUntilChanged, Subject, of, catchError } from 'rxjs';
-import { TaskApiService } from '../shared/services/task-api.service';
-import { Task } from '../shared/services/task.model';
+import { TaskApiService } from '../../shared/services/task-api.service';
+import { Task } from '../../shared/services/task.model';
 
 @Component({
   selector: 'app-rxjs',
