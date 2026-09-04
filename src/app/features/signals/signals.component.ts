@@ -3,8 +3,11 @@ import {
   Component,
   computed,
   effect,
+  inject,
   signal,
+  PLATFORM_ID,
 } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 
 @Component({
   selector: 'app-signals',
@@ -350,8 +353,10 @@ export default class SignalsComponent {
   protected readonly displayName = signal('');
 
   constructor() {
+    const platformId = inject(PLATFORM_ID);
     // linkedSignal pattern (manual in Angular 18): reset shipping when country changes
     effect(() => {
+      if (!isPlatformBrowser(platformId)) return;
       const options = this.availableShipping();
       this.shipping.set(options[0]?.id ?? '');
     });
@@ -359,6 +364,7 @@ export default class SignalsComponent {
     // fullName effect for log
     let firstRun = true;
     effect(() => {
+      if (!isPlatformBrowser(platformId)) return;
       const value = this.fullName();
       if (firstRun) {
         firstRun = false;

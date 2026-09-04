@@ -3,9 +3,11 @@ import {
   Component,
   computed,
   effect,
+  inject,
   signal,
+  PLATFORM_ID,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 
 @Component({
   selector: 'app-zoneless',
@@ -326,7 +328,9 @@ export const appConfig: ApplicationConfig = {
 };`;
 
   constructor() {
+    const platformId = inject(PLATFORM_ID);
     effect(() => {
+      if (!isPlatformBrowser(platformId)) return;
       const value = this.count();
       this.effectLog.update((current) => [
         ...current,
