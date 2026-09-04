@@ -314,6 +314,73 @@ import { debounceTime, switchMap, timer, of, map, catchError } from 'rxjs';
         </div>
       }
 
+      <!-- Async Validator Tab -->
+      @if (activeTab() === 'async') {
+        <div class="bg-white rounded-lg border border-slate-200 p-6" role="tabpanel">
+          <h2 class="text-xl font-semibold text-slate-900 mb-4">Async Validator — Username Availability</h2>
+          <p class="text-slate-600 mb-6">
+            Type a username (min 3 chars). Validator debounces 300ms, then checks against a simulated
+            800ms-delayed backend. Taken usernames: <code class="rounded bg-slate-100 px-1">admin</code>,
+            <code class="rounded bg-slate-100 px-1">test</code>, <code class="rounded bg-slate-100 px-1">user</code>.
+          </p>
+
+          <form [formGroup]="asyncForm" class="space-y-4" novalidate>
+            <div>
+              <label for="async-username" class="block text-sm font-medium text-slate-700 mb-1">Username</label>
+              <input
+                id="async-username"
+                type="text"
+                formControlName="username"
+                class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors"
+                [class.border-yellow-500]="asyncUsernameStatus() === 'checking'"
+                [class.border-green-500]="asyncUsernameStatus() === 'available'"
+                [class.border-red-500]="asyncUsernameStatus() === 'taken' || (asyncForm.get('username')?.invalid && asyncForm.get('username')?.touched && asyncUsernameStatus() !== 'checking')"
+                [class.border-slate-300]="asyncUsernameStatus() === 'idle' && !(asyncForm.get('username')?.invalid && asyncForm.get('username')?.touched)"
+                aria-describedby="async-username-error async-username-status"
+              />
+              @if (asyncForm.get('username')?.errors?.['required'] && asyncForm.get('username')?.touched) {
+                <p id="async-username-error" class="mt-1 text-sm text-red-600" role="alert">Username is required</p>
+              }
+              @if (asyncForm.get('username')?.errors?.['minlength'] && asyncForm.get('username')?.touched) {
+                <p id="async-username-error" class="mt-1 text-sm text-red-600" role="alert">Username must be at least 3 characters</p>
+              }
+              @if (asyncForm.get('username')?.errors?.['usernameTaken']) {
+                <p id="async-username-error" class="mt-1 text-sm text-red-600" role="alert">This username is already taken</p>
+              }
+
+              <div id="async-username-status" class="mt-2 flex items-center gap-2" role="status" aria-live="polite">
+                @if (asyncUsernameStatus() === 'checking') {
+                  <div class="inline-flex items-center gap-2 text-amber-600">
+                    <svg class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+                    <span class="text-sm font-medium">Checking availability…</span>
+                  </div>
+                } @else if (asyncUsernameStatus() === 'available') {
+                  <div class="inline-flex items-center gap-2 text-green-600">
+                    <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                    <span class="text-sm font-medium">Username available</span>
+                  </div>
+                } @else if (asyncUsernameStatus() === 'taken') {
+                  <div class="inline-flex items-center gap-2 text-red-600">
+                    <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>
+                    <span class="text-sm font-medium">Username taken — try another</span>
+                  </div>
+                }
+              </div>
+            </div>
+
+            <div class="pt-4 border-t border-slate-200">
+              <h3 class="text-sm font-medium text-slate-700 mb-2">Debug Info</h3>
+              <div class="rounded-md bg-slate-50 p-3 text-xs font-mono text-slate-700 space-y-1">
+                <div>Validator call count: {{ asyncValidatorCallCount() }}</div>
+                <div>Current status: {{ asyncUsernameStatus() }}</div>
+                <div>Form valid: {{ asyncForm.valid }}</div>
+                <div>Form pending: {{ asyncForm.pending }}</div>
+              </div>
+            </div>
+          </form>
+        </div>
+      }
+
       <!-- Dynamic FormArray Tab -->
       @if (activeTab() === 'formarray') {
         <div class="bg-white rounded-lg border border-slate-200 p-6" role="tabpanel">
