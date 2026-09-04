@@ -1,7 +1,6 @@
 import { Component, InjectionToken, inject, input } from '@angular/core';
 
 export interface AppConfig {
-  theme: 'light' | 'dark';
   apiUrl: string;
   version: string;
 }
@@ -9,7 +8,6 @@ export interface AppConfig {
 export const APP_CONFIG = new InjectionToken<AppConfig>('app.config', {
   providedIn: 'root',
   factory: (): AppConfig => ({
-    theme: 'light',
     apiUrl: 'https://api.default.example.com',
     version: '1.0.0',
   }),
