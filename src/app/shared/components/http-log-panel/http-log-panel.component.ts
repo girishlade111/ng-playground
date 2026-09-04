@@ -10,10 +10,10 @@ import { HttpLogEntry } from '../../../core/models/http-log.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule],
   template: `
-    <div class="fixed bottom-4 right-4 z-50 w-full max-w-2xl">
-      <div class="rounded-lg bg-white shadow-lg border border-slate-200 overflow-hidden">
-        <div class="flex items-center justify-between border-b border-slate-200 px-4 py-3 bg-slate-50">
-          <h2 class="text-sm font-semibold text-slate-900">HTTP Request Log</h2>
+    <div class="fixed bottom-4 right-4 z-50 w-full max-w-2xl px-4 sm:px-0">
+      <div class="rounded-[18px] bg-white border border-black/10 overflow-hidden">
+        <div class="frosted-parchment flex items-center justify-between border-b border-black/[0.08] px-4 py-3">
+          <h2 class="text-[14px] font-semibold tracking-[-0.224px] text-ink">HTTP Request Log</h2>
           <div class="flex items-center gap-2">
             <span class="text-xs text-slate-500">
               {{ pendingCount() }} pending
@@ -123,19 +123,19 @@ export class HttpLogPanelComponent {
   }
 
   protected getMethodClass(method: string): string {
-    const base = 'inline-flex items-center px-2 py-0.5 rounded text-xs font-medium';
+    const base = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-[12px] font-medium tracking-[-0.12px]';
     switch (method) {
       case 'GET':
-        return `${base} bg-blue-100 text-blue-800`;
+        return `${base} bg-action/10 text-action`;
       case 'POST':
-        return `${base} bg-green-100 text-green-800`;
+        return `${base} bg-green-600/10 text-green-700`;
       case 'PUT':
       case 'PATCH':
-        return `${base} bg-yellow-100 text-yellow-800`;
+        return `${base} bg-amber-500/15 text-amber-700`;
       case 'DELETE':
-        return `${base} bg-red-100 text-red-800`;
+        return `${base} bg-red-600/10 text-red-600`;
       default:
-        return `${base} bg-slate-100 text-slate-800`;
+        return `${base} bg-black/[0.06] text-ink-soft`;
     }
   }
 

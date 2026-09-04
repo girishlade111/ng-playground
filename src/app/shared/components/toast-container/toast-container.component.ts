@@ -9,11 +9,10 @@ import { ToastMessage } from '../../../core/models/toast.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule],
   template: `
-    <div class="fixed top-4 right-4 z-50 flex flex-col gap-2 w-full max-w-sm pointer-events-none">
+    <div class="fixed top-[60px] right-4 z-50 flex flex-col gap-2 w-full max-w-sm pointer-events-none">
       @for (toast of toastService.toasts(); track toast.id) {
         <div
-          class="pointer-events-auto animate-slide-in rounded-lg shadow-lg border overflow-hidden"
-          [class]="getToastClasses(toast.type)"
+          class="pointer-events-auto animate-slide-in rounded-[18px] border border-black/10 bg-white/90 overflow-hidden backdrop-blur-xl"
           role="alert"
           aria-live="polite"
         >
@@ -96,60 +95,30 @@ export class ToastContainerComponent {
   }
 
   protected getToastClasses(type: ToastMessage['type']): string {
-    const base = 'rounded-lg shadow-lg border';
-    switch (type) {
-      case 'error':
-        return `${base} bg-red-50 border-red-200`;
-      case 'success':
-        return `${base} bg-green-50 border-green-200`;
-      case 'warning':
-        return `${base} bg-yellow-50 border-yellow-200`;
-      case 'info':
-      default:
-        return `${base} bg-blue-50 border-blue-200`;
-    }
+    // Frosted white card for every tone; the icon carries the signal color.
+    return 'rounded-[18px] border border-black/10 bg-white/90 backdrop-blur-xl';
   }
 
   protected getIconClasses(type: ToastMessage['type']): string {
     switch (type) {
       case 'error':
-        return 'text-red-500';
+        return 'text-red-600';
       case 'success':
-        return 'text-green-500';
+        return 'text-green-600';
       case 'warning':
-        return 'text-yellow-500';
+        return 'text-amber-600';
       case 'info':
       default:
-        return 'text-blue-500';
+        return 'text-action';
     }
   }
 
   protected getTitleClasses(type: ToastMessage['type']): string {
-    switch (type) {
-      case 'error':
-        return 'text-red-800';
-      case 'success':
-        return 'text-green-800';
-      case 'warning':
-        return 'text-yellow-800';
-      case 'info':
-      default:
-        return 'text-blue-800';
-    }
+    return 'text-ink text-[17px] font-semibold tracking-[-0.374px]';
   }
 
   protected getMessageClasses(type: ToastMessage['type']): string {
-    switch (type) {
-      case 'error':
-        return 'text-red-700';
-      case 'success':
-        return 'text-green-700';
-      case 'warning':
-        return 'text-yellow-700';
-      case 'info':
-      default:
-        return 'text-blue-700';
-    }
+    return 'text-ink-soft text-[14px] tracking-[-0.224px]';
   }
 
   protected getDuration(toast: ToastMessage): number {
