@@ -10,8 +10,8 @@ interface FeatureCard {
 }
 
 /**
- * DESIGN.md gallery rhythm: light hero → dark product tile →
- * parchment utility grid → dark editorial tile → parchment footer.
+ * DESIGN.md gallery rhythm: light hero → parchment product tile →
+ * parchment utility grid → parchment editorial tile → parchment footer.
  */
 @Component({
   selector: 'app-home',
