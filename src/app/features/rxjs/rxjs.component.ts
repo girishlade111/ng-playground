@@ -157,6 +157,135 @@ import { Task } from '../shared/services/task.model';
           </div>
         </div>
       </div>
+
+      <!-- combineLatest + switchMap Search Demo -->
+      <div class="rounded-xl bg-white p-6 shadow-md space-y-6 border border-slate-200">
+        <h2 class="text-2xl font-bold text-indigo-600">RxJS · Search with Filters</h2>
+        <p class="text-slate-700">
+          Live search using <code class="rounded bg-slate-100 px-1">combineLatest()</code> +
+          <code class="rounded bg-slate-100 px-1">switchMap()</code> — debounced text input + category filter,
+          cancelling in-flight requests when new values arrive.
+        </p>
+
+        <!-- Controls -->
+        <div class="rounded-lg bg-slate-50 p-4 space-y-4">
+          <div>
+            <label for="search-input" class="block text-sm font-medium text-slate-700 mb-1">Search tasks</label>
+            <input
+              id="search-input"
+              type="text"
+              [value]="searchQuery()"
+              (input)="onSearchQueryChange($any($event.target).value)"
+              placeholder="Type to search titles…"
+              class="w-full rounded-md border border-slate-300 px-3 py-2 text-slate-800 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            />
+          </div>
+          <div>
+            <label for="search-category" class="block text-sm font-medium text-slate-700 mb-1">Filter by status</label>
+            <select
+              id="search-category"
+              [value]="searchCategory()"
+              (change)="onSearchCategoryChange($any($event.target).value)"
+              class="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-800 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            >
+              <option value="all">All statuses</option>
+              <option value="todo">To Do</option>
+              <option value="in-progress">In Progress</option>
+              <option value="done">Done</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Loading / Error State -->
+        @if (searchLoading()) {
+          <div class="rounded-lg border border-slate-200 bg-white p-8 text-center" role="status" aria-live="polite">
+            <div class="inline-flex items-center gap-3 text-slate-600">
+              <svg class="h-6 w-6 animate-spin text-indigo-600" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              </svg>
+              <span>Searching…</span>
+            </div>
+          </div>
+        } @else if (searchError()) {
+          <div class="rounded-lg bg-red-50 border border-red-200 p-4" role="alert">
+            <div class="flex items-center gap-3">
+              <svg class="h-5 w-5 text-red-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+              </svg>
+              <p class="text-red-700">{{ searchError() }}</p>
+            </div>
+          </div>
+        } @else {
+          <!-- Results Table -->
+          <div class="rounded-lg border border-slate-200 bg-white overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full" role="grid">
+                <thead class="bg-slate-50">
+                  <tr>
+                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">ID</th>
+                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Title</th>
+                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Status</th>
+                    <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Created At</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-200">
+                  @for (task of searchResults(); track task.id) {
+                    <tr class="hover:bg-slate-50 transition-colors">
+                      <td class="px-4 py-3 text-sm font-mono text-slate-500">{{ task.id }}</td>
+                      <td class="px-4 py-3 text-sm font-medium text-slate-900">{{ task.title }}</td>
+                      <td class="px-4 py-3">
+                        <span [class]="getStatusClass(task.status)" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium">
+                          {{ formatStatus(task.status) }}
+                        </span>
+                      </td>
+                      <td class="px-4 py-3 text-sm text-slate-500">{{ formatDate(task.createdAt) }}</td>
+                    </tr>
+                  } @empty {
+                    <tr>
+                      <td colspan="4" class="px-4 py-8 text-center text-slate-500">
+                        No tasks match your search.
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+            <div class="px-4 py-3 bg-slate-50 border-t border-slate-200 text-sm text-slate-600">
+              Showing {{ searchResults().length }} task{{ searchResults().length !== 1 ? 's' : '' }}
+            </div>
+          </div>
+        }
+
+        <!-- Pipeline Visualization -->
+        <div class="rounded-lg bg-slate-50 p-4 space-y-3">
+          <h3 class="text-sm font-semibold text-slate-800">Pipeline</h3>
+          <div class="space-y-2 font-mono text-xs text-slate-600">
+            <div class="flex items-center gap-2">
+              <span class="rounded-md bg-indigo-50 px-2 py-1 text-indigo-700">searchQuery$</span>
+              <span class="text-slate-400">→</span>
+              <span class="rounded-md bg-emerald-50 px-2 py-1 text-emerald-700">debounceTime(300)</span>
+              <span class="text-slate-400">→</span>
+              <span class="rounded-md bg-emerald-50 px-2 py-1 text-emerald-700">distinctUntilChanged()</span>
+            </div>
+            <div class="flex items-center gap-2 pl-10">
+              <span class="rounded-md bg-amber-50 px-2 py-1 text-amber-700">searchCategory$</span>
+              <span class="text-slate-400">→</span>
+              <span class="text-slate-500">(no debounce)</span>
+            </div>
+            <div class="flex items-center gap-2 pl-10">
+              <span class="rounded-md bg-rose-50 px-2 py-1 text-rose-700">combineLatest([query, category])</span>
+              <span class="text-slate-400">→</span>
+              <span class="text-slate-500">Emits when either changes</span>
+            </div>
+            <div class="flex items-center gap-2 pl-10">
+              <span class="rounded-md bg-purple-50 px-2 py-1 text-purple-700">switchMap(fetch & filter)</span>
+              <span class="text-slate-400">→</span>
+              <span class="text-slate-500">Cancels previous, runs latest</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
   `,
 })
