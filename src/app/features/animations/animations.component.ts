@@ -112,27 +112,32 @@ import { Task } from '../../shared/services/task.model';
         </div>
 
         <div class="min-h-[300px]" [@listStagger]="tasks.length">
-          <ul class="space-y-3" *ngIf="tasks.length > 0">
-            <li *ngFor="let task of tasks" class="rounded-lg border border-slate-200 bg-white p-4 shadow-sm flex items-center gap-4">
-              <span class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium text-white"
-                [class.bg-green-500]="task.status === 'done'"
-                [class.bg-amber-500]="task.status === 'in-progress'"
-                [class.bg-slate-400]="task.status === 'todo'"
-              >
-                {{ task.status === 'done' ? '✓' : task.status === 'in-progress' ? '→' : '○' }}
-              </span>
-              <div class="flex-1 min-w-0">
-                <h4 class="font-medium text-slate-900 truncate">{{ task.title }}</h4>
-                <p class="text-sm text-slate-500 truncate">{{ task.description }}</p>
-              </div>
-              <span class="text-xs px-2 py-1 rounded-full bg-slate-100 text-slate-600 capitalize">
-                {{ task.status }}
-              </span>
-            </li>
-          </ul>
-          <div *ngIf="tasks.length === 0" class="text-center py-12 text-slate-500">
-            <p>Click "Populate List" to see the staggered animation.</p>
-          </div>
+          @if (tasks.length > 0) {
+            <ul class="space-y-3">
+              @for (task of tasks; track task.id) {
+                <li class="rounded-lg border border-slate-200 bg-white p-4 shadow-sm flex items-center gap-4">
+                  <span class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium text-white"
+                    [class.bg-green-500]="task.status === 'done'"
+                    [class.bg-amber-500]="task.status === 'in-progress'"
+                    [class.bg-slate-400]="task.status === 'todo'"
+                  >
+                    {{ task.status === 'done' ? '✓' : task.status === 'in-progress' ? '→' : '○' }}
+                  </span>
+                  <div class="flex-1 min-w-0">
+                    <h4 class="font-medium text-slate-900 truncate">{{ task.title }}</h4>
+                    <p class="text-sm text-slate-500 truncate">{{ task.description }}</p>
+                  </div>
+                  <span class="text-xs px-2 py-1 rounded-full bg-slate-100 text-slate-600 capitalize">
+                    {{ task.status }}
+                  </span>
+                </li>
+              }
+            </ul>
+          } @else {
+            <div class="text-center py-12 text-slate-500">
+              <p>Click "Populate List" to see the staggered animation.</p>
+            </div>
+          }
         </div>
       </section>
     </section>
