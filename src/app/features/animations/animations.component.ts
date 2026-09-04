@@ -46,39 +46,43 @@ import { Task } from '../../shared/services/task.model';
         </div>
 
         <div class="relative min-h-[200px]" [@tabSwitch]="activeTab">
-          <div *ngIf="activeTab === 'tab1'" class="absolute inset-0">
-            <div class="space-y-4">
-              <h3 class="text-lg font-medium text-slate-900">Tab 1 Content</h3>
-              <p class="text-slate-600">This is the first tab panel. Click the tabs above to see the fade/slide transition.</p>
-              <div class="grid gap-4 md:grid-cols-2">
-                <div class="rounded-lg border border-slate-200 p-4 bg-slate-50">
-                  <h4 class="font-medium text-slate-900">Card A</h4>
-                  <p class="text-sm text-slate-600 mt-1">Content for the first tab panel.</p>
-                </div>
-                <div class="rounded-lg border border-slate-200 p-4 bg-slate-50">
-                  <h4 class="font-medium text-slate-900">Card B</h4>
-                  <p class="text-sm text-slate-600 mt-1">More content in the first tab.</p>
+          @if (activeTab === 'tab1') {
+            <div class="absolute inset-0">
+              <div class="space-y-4">
+                <h3 class="text-lg font-medium text-slate-900">Tab 1 Content</h3>
+                <p class="text-slate-600">This is the first tab panel. Click the tabs above to see the fade/slide transition.</p>
+                <div class="grid gap-4 md:grid-cols-2">
+                  <div class="rounded-lg border border-slate-200 p-4 bg-slate-50">
+                    <h4 class="font-medium text-slate-900">Card A</h4>
+                    <p class="text-sm text-slate-600 mt-1">Content for the first tab panel.</p>
+                  </div>
+                  <div class="rounded-lg border border-slate-200 p-4 bg-slate-50">
+                    <h4 class="font-medium text-slate-900">Card B</h4>
+                    <p class="text-sm text-slate-600 mt-1">More content in the first tab.</p>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          }
 
-          <div *ngIf="activeTab === 'tab2'" class="absolute inset-0">
-            <div class="space-y-4">
-              <h3 class="text-lg font-medium text-slate-900">Tab 2 Content</h3>
-              <p class="text-slate-600">This is the second tab panel. Notice the smooth transition when switching.</p>
-              <div class="grid gap-4 md:grid-cols-2">
-                <div class="rounded-lg border border-slate-200 p-4 bg-indigo-50">
-                  <h4 class="font-medium text-slate-900">Card X</h4>
-                  <p class="text-sm text-slate-600 mt-1">Content for the second tab panel.</p>
-                </div>
-                <div class="rounded-lg border border-slate-200 p-4 bg-indigo-50">
-                  <h4 class="font-medium text-slate-900">Card Y</h4>
-                  <p class="text-sm text-slate-600 mt-1">More content in the second tab.</p>
+          @if (activeTab === 'tab2') {
+            <div class="absolute inset-0">
+              <div class="space-y-4">
+                <h3 class="text-lg font-medium text-slate-900">Tab 2 Content</h3>
+                <p class="text-slate-600">This is the second tab panel. Notice the smooth transition when switching.</p>
+                <div class="grid gap-4 md:grid-cols-2">
+                  <div class="rounded-lg border border-slate-200 p-4 bg-indigo-50">
+                    <h4 class="font-medium text-slate-900">Card X</h4>
+                    <p class="text-sm text-slate-600 mt-1">Content for the second tab panel.</p>
+                  </div>
+                  <div class="rounded-lg border border-slate-200 p-4 bg-indigo-50">
+                    <h4 class="font-medium text-slate-900">Card Y</h4>
+                    <p class="text-sm text-slate-600 mt-1">More content in the second tab.</p>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          }
         </div>
       </section>
 
