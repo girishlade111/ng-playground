@@ -4,9 +4,12 @@ import {
   DestroyRef,
   inject,
   signal,
+  OnInit,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { interval, map, filter, tap, Subscription } from 'rxjs';
+import { interval, map, filter, tap, Subscription, combineLatest, switchMap, startWith, debounceTime, distinctUntilChanged, Subject, of, catchError } from 'rxjs';
+import { TaskApiService } from '../shared/services/task-api.service';
+import { Task } from '../shared/services/task.model';
 
 @Component({
   selector: 'app-rxjs',
@@ -157,8 +160,9 @@ import { interval, map, filter, tap, Subscription } from 'rxjs';
     </section>
   `,
 })
-export default class RxjsComponent {
+export default class RxjsComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
+  private readonly taskApi = inject(TaskApiService);
 
   protected readonly value = signal(0);
   protected readonly isRunning = signal(false);
@@ -169,6 +173,70 @@ export default class RxjsComponent {
   private subscription?: Subscription;
 
   protected isEven = signal(true);
+
+  // Search with filters demo
+  protected readonly searchQuery = signal('');
+  protected readonly searchCategory = signal<'all' | 'todo' | 'in-progress' | 'done'>('all');
+  protected readonly searchResults = signal<Task[]>([]);
+  protected readonly searchLoading = signal(false);
+  protected readonly searchError = signal<string | null>(null);
+
+  private readonly searchQuery$ = new Subject<string>();
+  private readonly searchCategory$ = new Subject<'all' | 'todo' | 'in-progress' | 'done'>();
+
+  ngOnInit(): void {
+    this.setupSearch();
+  }
+
+  private setupSearch(): void {
+    combineLatest([
+      this.searchQuery$.pipe(startWith(''), debounceTime(300), distinctUntilChanged()),
+      this.searchCategory$.pipe(startWith('all' as const)),
+    ])
+      .pipe(
+        switchMap(([query, category]) => {
+          this.searchLoading.set(true);
+          this.searchError.set(null);
+          return this.taskApi.getAll().pipe(
+            map((tasks) => {
+              let filtered = tasks;
+              if (query.trim()) {
+                const q = query.toLowerCase();
+                filtered = filtered.filter((t) => t.title.toLowerCase().includes(q));
+              }
+              if (category !== 'all') {
+                filtered = filtered.filter((t) => t.status === category);
+              }
+              return filtered;
+            }),
+            catchError((err) => {
+              this.searchError.set(err.message);
+              return of([] as Task[]);
+            })
+          );
+        }),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe({
+        next: (results) => {
+          this.searchResults.set(results);
+          this.searchLoading.set(false);
+        },
+        error: () => {
+          this.searchLoading.set(false);
+        },
+      });
+  }
+
+  protected onSearchQueryChange(value: string): void {
+    this.searchQuery.set(value);
+    this.searchQuery$.next(value);
+  }
+
+  protected onSearchCategoryChange(value: 'all' | 'todo' | 'in-progress' | 'done'): void {
+    this.searchCategory.set(value);
+    this.searchCategory$.next(value);
+  }
 
   protected start(): void {
     if (this.isRunning() || this.subscription?.closed === false) {
