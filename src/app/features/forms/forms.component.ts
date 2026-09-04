@@ -535,17 +535,23 @@ export default class FormsComponent {
   private asyncUsernameValidator(control: AbstractControl) {
     const value = control.value;
     if (!value || value.length < 3) {
+      this.asyncUsernameStatus.set('idle');
       return of(null);
     }
 
     this.asyncUsernameStatus.set('checking');
-    this.asyncValidatorCallCount.update(count => count + 1);
 
-    return timer(800).pipe(
-      map(() => {
-        const isTaken = this.takenUsernames.includes(value.toLowerCase());
-        this.asyncUsernameStatus.set(isTaken ? 'taken' : 'available');
-        return isTaken ? { usernameTaken: true } : null;
+    return of(value).pipe(
+      debounceTime(300),
+      switchMap((val) => {
+        this.asyncValidatorCallCount.update((count) => count + 1);
+        return timer(800).pipe(
+          map(() => {
+            const isTaken = this.takenUsernames.includes(val.toLowerCase());
+            this.asyncUsernameStatus.set(isTaken ? 'taken' : 'available');
+            return isTaken ? { usernameTaken: true } : null;
+          })
+        );
       }),
       catchError(() => {
         this.asyncUsernameStatus.set('idle');
