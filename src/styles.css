@@ -2,4 +2,237 @@
 @tailwind components;
 @tailwind utilities;
 
-/* You can add global styles to this file, and also import other style files */
+/* ============================================================
+   DESIGN.md — Apple-design-analysis base system
+   Photography-first gallery: parchment/white ↔ near-black tiles,
+   one Action Blue accent, SF tight headlines, 17px body.
+   ============================================================ */
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    font-family: "SF Pro Text", system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+    font-size: 17px;
+    font-weight: 400;
+    line-height: 1.47;
+    letter-spacing: -0.374px;
+    color: #1d1d1f;
+    background-color: #ffffff;
+  }
+
+  h1, h2, h3 {
+    font-family: "SF Pro Display", system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+    font-weight: 600;
+    color: #1d1d1f;
+  }
+
+  ::selection {
+    background-color: rgba(0, 102, 204, 0.16);
+  }
+
+  /* System-wide micro-interaction: press scale (DESIGN.md Do #7). */
+  button:active, a:active {
+    transform: scale(0.985);
+  }
+
+  /* Single focus signal: Focus Blue ring. */
+  :focus-visible {
+    outline: 2px solid #0071e3;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  code, pre, kbd {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@layer components {
+  /* ---- Buttons (DESIGN.md grammars) ---- */
+  .btn-apple {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 11px 22px;
+    border-radius: 9999px;
+    background-color: #0066cc;
+    color: #ffffff;
+    font-size: 17px;
+    font-weight: 400;
+    line-height: 1.2;
+    transition: background-color 150ms ease, transform 120ms ease;
+  }
+  .btn-apple:hover { background-color: #0058b3; }
+  .btn-apple:active { transform: scale(0.95); }
+
+  .btn-apple-ghost {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 11px 22px;
+    border-radius: 9999px;
+    background-color: transparent;
+    color: #0066cc;
+    border: 1px solid #0066cc;
+    font-size: 17px;
+    font-weight: 400;
+    line-height: 1.2;
+    transition: background-color 150ms ease, transform 120ms ease;
+  }
+  .btn-apple-ghost:hover { background-color: rgba(0, 102, 204, 0.08); }
+  .btn-apple-ghost:active { transform: scale(0.95); }
+
+  .btn-apple-dark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 32px;
+    padding: 8px 15px;
+    border-radius: 8px;
+    background-color: #1d1d1f;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: -0.224px;
+    transition: background-color 150ms ease, transform 120ms ease;
+  }
+  .btn-apple-dark:active { transform: scale(0.95); }
+
+  .btn-apple-pearl {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 36px;
+    padding: 8px 14px;
+    border-radius: 11px;
+    background-color: #fafafc;
+    color: #333333;
+    border: 1px solid #f0f0f0;
+    font-size: 14px;
+    letter-spacing: -0.224px;
+    transition: background-color 150ms ease, transform 120ms ease;
+  }
+  .btn-apple-pearl:active { transform: scale(0.95); }
+
+  .link-apple { color: #0066cc; }
+  .link-apple:hover { text-decoration: underline; }
+  .link-apple-ondark { color: #2997ff; }
+  .link-apple-ondark:hover { text-decoration: underline; }
+
+  /* ---- Tiles (full-bleed, square corners — color change IS the divider) ---- */
+  .tile { border-radius: 0; padding-top: 80px; padding-bottom: 80px; }
+  .tile-light { background-color: #ffffff; color: #1d1d1f; }
+  .tile-parchment { background-color: #f5f5f7; color: #1d1d1f; }
+  .tile-dark { background-color: #272729; color: #ffffff; }
+  .tile-dark-2 { background-color: #2a2a2c; color: #ffffff; }
+  .tile-dark-3 { background-color: #252527; color: #ffffff; }
+
+  /* ---- Store utility card (white, hairline, 18px, 24px — never shadowed) ---- */
+  .card-utility {
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 18px;
+    padding: 24px;
+  }
+
+  /* ---- Configurator chip / search pill ---- */
+  .chip-option {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    border-radius: 9999px;
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    color: #1d1d1f;
+    font-size: 14px;
+    letter-spacing: -0.224px;
+    min-height: 44px;
+    transition: border-color 150ms ease, transform 120ms ease;
+  }
+  .chip-option[aria-pressed="true"], .chip-option.is-selected {
+    border: 2px solid #0071e3;
+    padding: 11px 15px;
+  }
+  .chip-option:active { transform: scale(0.95); }
+
+  .search-apple {
+    width: 100%;
+    height: 44px;
+    padding: 12px 20px 12px 44px;
+    border-radius: 9999px;
+    background-color: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    color: #1d1d1f;
+    font-size: 17px;
+  }
+  .search-apple::placeholder { color: #7a7a7a; }
+  .search-apple:focus { border-color: #0071e3; outline: none; box-shadow: 0 0 0 2px rgba(0, 113, 227, 0.25); }
+
+  /* ---- Frosted bars (functional blur, not decoration) ---- */
+  .frosted-parchment {
+    background-color: rgba(245, 245, 247, 0.8);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+  }
+}
+
+/* ============================================================
+   Legacy-compat layer — pulls existing feature pages into the
+   Apple system without per-file rewrites.
+   ============================================================ */
+
+/* No shadows on chrome/cards (DESIGN.md Don't #2). The single
+   product shadow lives on `.shadow-product` imagery only. */
+.shadow-sm, .shadow-md,
+.hover\:shadow-lg:hover {
+  box-shadow: none !important;
+}
+
+/* Headlines are ink, never accent (DESIGN.md Do #2). */
+main h1.text-indigo-600 { color: #1d1d1f; letter-spacing: -0.374px; }
+main h2.text-indigo-600 { color: #1d1d1f; letter-spacing: -0.374px; }
+.dark main h1.text-indigo-600 { color: #ffffff; }
+.dark main h2.text-indigo-600 { color: #ffffff; }
+
+/* Primary demo controls read as Apple pills. */
+main button[class*="bg-indigo-600"],
+main button[class*="bg-indigo-700"] {
+  border-radius: 9999px;
+  min-height: 44px;
+}
+main button:active { transform: scale(0.95); }
+
+/* Form focus always resolves to the single accent. */
+main input:focus, main select:focus, main textarea:focus {
+  border-color: #0066cc !important;
+  --tw-ring-color: #0071e3 !important;
+}
+
+/* Footer / dense link stacks breathe at 2.41 (DESIGN.md type table). */
+.footer-dense a { line-height: 2.41; }
+
+/* Hero collapsing strategy (DESIGN.md breakpoints). */
+.hero-display {
+  font-size: 28px;
+  line-height: 1.07;
+  letter-spacing: -0.28px;
+  font-weight: 600;
+  font-family: "SF Pro Display", system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+}
+@media (min-width: 420px) { .hero-display { font-size: 34px; } }
+@media (min-width: 641px) { .hero-display { font-size: 40px; } }
+@media (min-width: 1069px) { .hero-display { font-size: 56px; } }
+
+@media (max-width: 640px) {
+  .tile { padding-top: 48px; padding-bottom: 48px; }
+}
