@@ -431,8 +431,13 @@ export default class FormsComponent {
   templateFormValue = signal<Record<string, unknown> | null>(null);
   skillsFormValue = signal<Record<string, unknown> | null>(null);
 
+  // Async Validator state
+  asyncUsernameStatus = signal<'idle' | 'checking' | 'available' | 'taken'>('idle');
+  asyncValidatorCallCount = signal(0);
+
   reactiveForm: FormGroup;
   skillsForm: FormGroup;
+  asyncForm: FormGroup;
   templateModel = { name: '', email: '', password: '' };
 
   constructor(private fb: FormBuilder) {
@@ -446,11 +451,40 @@ export default class FormsComponent {
       ]],
     });
 
+    this.asyncForm = this.fb.group({
+      username: ['', [Validators.required, Validators.minLength(3)], [this.asyncUsernameValidator.bind(this)]],
+    });
+
     this.skillsForm = this.fb.group({
       skills: this.fb.array([
         this.createSkillGroup()
       ])
     });
+  }
+
+  // Async validator for username availability
+  private readonly takenUsernames = ['admin', 'test', 'user'];
+
+  private asyncUsernameValidator(control: AbstractControl) {
+    const value = control.value;
+    if (!value || value.length < 3) {
+      return of(null);
+    }
+
+    this.asyncUsernameStatus.set('checking');
+    this.asyncValidatorCallCount.update(count => count + 1);
+
+    return timer(800).pipe(
+      map(() => {
+        const isTaken = this.takenUsernames.includes(value.toLowerCase());
+        this.asyncUsernameStatus.set(isTaken ? 'taken' : 'available');
+        return isTaken ? { usernameTaken: true } : null;
+      }),
+      catchError(() => {
+        this.asyncUsernameStatus.set('idle');
+        return of(null);
+      })
+    );
   }
 
   get skillsArray(): FormArray {
