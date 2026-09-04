@@ -240,8 +240,45 @@ export default class CrudComponent implements OnInit {
   }
 
   protected onEdit(task: Task): void {
-    // TODO: Implement edit functionality
-    console.log('Edit task:', task);
+    this.editing.set(task.id);
+    this.editForm.patchValue({
+      title: task.title,
+      description: task.description,
+      status: task.status,
+    });
+  }
+
+  protected onCancelEdit(): void {
+    this.editing.set(null);
+    this.editForm.reset({ title: '', description: '', status: 'todo' });
+  }
+
+  protected onSaveEdit(task: Task): void {
+    if (this.editForm.invalid) {
+      this.editForm.markAllAsTouched();
+      return;
+    }
+
+    const previousTasks = this.tasks();
+    const updatedTask = { ...task, ...this.editForm.getRawValue() };
+
+    this.tasks.update((current) =>
+      current.map((t) => (t.id === task.id ? updatedTask : t))
+    );
+    this.editing.set(null);
+
+    this.taskApi.update(task.id, this.editForm.getRawValue()).subscribe({
+      next: (savedTask) => {
+        this.tasks.update((current) =>
+          current.map((t) => (t.id === task.id ? savedTask : t))
+        );
+        this.toast.success('Task updated', `"${savedTask.title}" has been updated.`);
+      },
+      error: (err) => {
+        this.tasks.set(previousTasks);
+        this.toast.error('Update failed', err.message);
+      },
+    });
   }
 
   protected onDelete(task: Task): void {
