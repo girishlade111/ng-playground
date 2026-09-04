@@ -4,11 +4,11 @@ import { isPlatformBrowser } from '@angular/common';
 @Injectable({ providedIn: 'root' })
 export class DarkModeService {
   private readonly STORAGE_KEY = 'dark-mode';
+  private readonly platformId = inject(PLATFORM_ID);
   readonly isDark = signal(false);
 
   constructor() {
-    const platformId = inject(PLATFORM_ID);
-    if (isPlatformBrowser(platformId)) {
+    if (isPlatformBrowser(this.platformId)) {
       const saved = localStorage.getItem(this.STORAGE_KEY);
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       const initial = saved ? JSON.parse(saved) : prefersDark;
@@ -18,8 +18,7 @@ export class DarkModeService {
   }
 
   private readonly syncEffect = effect(() => {
-    const platformId = inject(PLATFORM_ID);
-    if (!isPlatformBrowser(platformId)) return;
+    if (!isPlatformBrowser(this.platformId)) return;
     const dark = this.isDark();
     localStorage.setItem(this.STORAGE_KEY, JSON.stringify(dark));
     this.applyTheme(dark);
@@ -30,8 +29,7 @@ export class DarkModeService {
   }
 
   private applyTheme(dark: boolean): void {
-    const platformId = inject(PLATFORM_ID);
-    if (!isPlatformBrowser(platformId)) return;
+    if (!isPlatformBrowser(this.platformId)) return;
     if (dark) {
       document.documentElement.classList.add('dark');
     } else {
