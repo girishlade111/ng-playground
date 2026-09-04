@@ -237,7 +237,8 @@ import { isPlatformBrowser } from '@angular/common';
         <div class="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
           Change the country — the shipping selection automatically resets to the first
           valid option for the new country. This is the <code class="rounded bg-amber-100 px-1">signal() + effect()</code> pattern
-          (<code class="rounded bg-slate-100 px-1">linkedSignal()</code> in Angular 19+).
+          (<code class="rounded bg-slate-100 px-1">linkedSignal()</code> in Angular 19+). Angular 18 does not have native
+          <code class="rounded bg-slate-100 px-1">linkedSignal()</code> — upgrade to Angular 19+ for the built-in API.
         </div>
 
         <hr class="border-slate-200" />
