@@ -54,7 +54,7 @@ class ChildConfigComponent {}
   standalone: true,
   imports: [ConfigDisplayComponent, ChildConfigComponent],
   providers: [
-    { provide: APP_CONFIG, useValue: { theme: 'dark', apiUrl: 'https://api.parent.example.com', version: '2.0.0' } },
+    { provide: APP_CONFIG, useValue: { apiUrl: 'https://api.parent.example.com', version: '2.0.0' } },
   ],
   template: `
     <div class="space-y-4">
