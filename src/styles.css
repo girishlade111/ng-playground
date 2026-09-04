@@ -125,8 +125,6 @@
 
   .link-apple { color: #0066cc; }
   .link-apple:hover { text-decoration: underline; }
-  .link-apple-ondark { color: #2997ff; }
-  .link-apple-ondark:hover { text-decoration: underline; }
 
   /* ---- Tiles (full-bleed, square corners — color change IS the divider) ---- */
   .tile { border-radius: 0; padding-top: 80px; padding-bottom: 80px; }
