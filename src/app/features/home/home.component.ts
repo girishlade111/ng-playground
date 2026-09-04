@@ -52,32 +52,32 @@ interface FeatureCard {
       </div>
     </section>
 
-    <!-- product-tile-dark: proof band -->
-    <section class="tile tile-dark">
+<!-- product-tile-parchment: proof band -->
+    <section class="tile tile-parchment">
       <div class="mx-auto max-w-[980px] px-6 text-center">
-        <h2 class="font-display text-[34px] font-semibold leading-[1.1] text-white sm:text-[40px]">
+        <h2 class="font-display text-[34px] font-semibold leading-[1.1] text-ink sm:text-[40px]">
           One lab. Every modern primitive.
         </h2>
-        <p class="mx-auto mt-4 max-w-2xl text-[17px] font-normal leading-[1.47] tracking-[-0.374px] text-[#cccccc]">
+        <p class="mx-auto mt-4 max-w-2xl text-[17px] font-normal leading-[1.47] tracking-[-0.374px] text-ink-soft">
           Nine interactive exhibits, lazy-loaded at the route boundary. No chrome competing with the content.
         </p>
         <dl class="mx-auto mt-10 grid max-w-2xl grid-cols-1 gap-8 sm:grid-cols-3">
           <div>
-            <dt class="order-2 mt-1 block text-[14px] font-normal leading-[1.43] tracking-[-0.224px] text-[#cccccc]">interactive exhibits</dt>
-            <dd class="order-1 font-display text-[40px] font-semibold leading-[1.1] text-white">9</dd>
+            <dt class="order-2 mt-1 block text-[14px] font-normal leading-[1.43] tracking-[-0.224px] text-ink-mute">interactive exhibits</dt>
+            <dd class="order-1 font-display text-[40px] font-semibold leading-[1.1] text-ink">9</dd>
           </div>
           <div>
-            <dt class="order-2 mt-1 block text-[14px] font-normal leading-[1.43] tracking-[-0.224px] text-[#cccccc]">standalone components</dt>
-            <dd class="order-1 font-display text-[40px] font-semibold leading-[1.1] text-white">100%</dd>
+            <dt class="order-2 mt-1 block text-[14px] font-normal leading-[1.43] tracking-[-0.224px] text-ink-mute">standalone components</dt>
+            <dd class="order-1 font-display text-[40px] font-semibold leading-[1.1] text-ink">100%</dd>
           </div>
           <div>
-            <dt class="order-2 mt-1 block text-[14px] font-normal leading-[1.43] tracking-[-0.224px] text-[#cccccc]">zone.js required</dt>
-            <dd class="order-1 font-display text-[40px] font-semibold leading-[1.1] text-white">0</dd>
+            <dt class="order-2 mt-1 block text-[14px] font-normal leading-[1.43] tracking-[-0.224px] text-ink-mute">zone.js required</dt>
+            <dd class="order-1 font-display text-[40px] font-semibold leading-[1.1] text-ink">0</dd>
           </div>
         </dl>
         <div class="mt-10 flex flex-wrap items-center justify-center gap-6 text-[17px]">
-          <a routerLink="/zoneless" class="link-apple-ondark">Why zoneless &gt;</a>
-          <a routerLink="/ssr-defer" class="link-apple-ondark">How defer works &gt;</a>
+          <a routerLink="/zoneless" class="link-apple">Why zoneless ></a>
+          <a routerLink="/ssr-defer" class="link-apple">How defer works ></a>
         </div>
       </div>
     </section>
