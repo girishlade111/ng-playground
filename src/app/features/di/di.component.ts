@@ -41,7 +41,7 @@ class ConfigDisplayComponent {
   standalone: true,
   imports: [ConfigDisplayComponent],
   providers: [
-    { provide: APP_CONFIG, useValue: { theme: 'dark', apiUrl: 'https://api.child.example.com', version: '3.0.0-beta' } },
+    { provide: APP_CONFIG, useValue: { apiUrl: 'https://api.child.example.com', version: '3.0.0-beta' } },
   ],
   template: `
     <app-config-display [label]="'Child Component (Override)'"></app-config-display>
