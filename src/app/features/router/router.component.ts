@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿import { Component, inject } from '@angular/core';
+﻿﻿﻿import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AccessControlService } from '../../shared/services/access-control.service';
 
@@ -80,7 +80,7 @@ import { AccessControlService } from '../../shared/services/access-control.servi
         </div>
       </div>
 
-      <!-- Navigation Links -->
+<!-- Navigation Links -->
       <div class="rounded-xl border border-slate-200 bg-white p-6 space-y-4">
         <h2 class="text-lg font-semibold text-slate-900">Test the Guard</h2>
         <p class="text-slate-600">
@@ -99,6 +99,34 @@ import { AccessControlService } from '../../shared/services/access-control.servi
             class="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors"
           >
             View Access Denied Page
+          </a>
+        </div>
+      </div>
+
+      <!-- Resolver Demo Links -->
+      <div class="rounded-xl border border-slate-200 bg-white p-6 space-y-4">
+        <h2 class="text-lg font-semibold text-slate-900">Route Resolver Demo</h2>
+        <p class="text-slate-600">
+          Click a task link to see the resolver in action. Navigation waits for data to load.
+        </p>
+        <div class="flex flex-wrap gap-3">
+          <a
+            routerLink="/router/task/1"
+            class="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors border border-slate-300"
+          >
+            Task #1 (Set up project structure)
+          </a>
+          <a
+            routerLink="/router/task/2"
+            class="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors"
+          >
+            Task #2 (Create Task API service)
+          </a>
+          <a
+            routerLink="/router/task/3"
+            class="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors"
+          >
+            Task #3 (Implement CRUD UI)
           </a>
         </div>
       </div>
