@@ -327,14 +327,14 @@ export default class RxjsComponent implements OnInit {
           this.searchLoading.set(true);
           this.searchError.set(null);
           return this.taskApi.getAll().pipe(
-            map((tasks) => {
-              let filtered = tasks;
+            map((tasks: Task[]) => {
+              let filtered: Task[] = tasks;
               if (query.trim()) {
                 const q = query.toLowerCase();
-                filtered = filtered.filter((t) => t.title.toLowerCase().includes(q));
+                filtered = filtered.filter((t: Task) => t.title.toLowerCase().includes(q));
               }
               if (category !== 'all') {
-                filtered = filtered.filter((t) => t.status === category);
+                filtered = filtered.filter((t: Task) => t.status === category);
               }
               return filtered;
             }),
