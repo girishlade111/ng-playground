@@ -236,11 +236,10 @@ export default class CrudComponent implements OnInit {
     status: ['todo' as const],
   });
 
-  protected readonly editing = signal<string | null>(null);
   protected readonly editForm = this.fb.nonNullable.group({
     title: ['', [Validators.required, Validators.maxLength(100)]],
     description: [''],
-    status: ['todo' as const],
+    status: ['todo' as Task['status']],
   });
 
   ngOnInit(): void {
