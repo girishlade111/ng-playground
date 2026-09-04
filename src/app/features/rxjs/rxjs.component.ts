@@ -442,6 +442,8 @@ export default class RxjsComponent implements OnInit {
         return 'To Do';
       case 'done':
         return 'Done';
+      default:
+        return status;
     }
   }
 
