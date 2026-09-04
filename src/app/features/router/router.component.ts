@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿import { Component, inject } from '@angular/core';
+﻿﻿﻿﻿﻿import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AccessControlService } from '../../shared/services/access-control.service';
 
@@ -103,7 +103,7 @@ import { AccessControlService } from '../../shared/services/access-control.servi
         </div>
       </div>
 
-      <!-- How it works -->
+<!-- How it works -->
       <div class="rounded-xl border border-slate-200 bg-white p-6 space-y-3">
         <h2 class="text-lg font-semibold text-slate-900">How It Works</h2>
         <div class="space-y-2 text-sm text-slate-600">
@@ -140,6 +140,73 @@ import { AccessControlService } from '../../shared/services/access-control.servi
               which updates the signal reactively
             </span>
           </div>
+        </div>
+      </div>
+
+      <!-- loadComponent vs loadChildren Comparison -->
+      <div class="rounded-xl border border-amber-200 bg-amber-50 p-6 space-y-4">
+        <h2 class="text-lg font-semibold text-amber-900 flex items-center gap-2">
+          <svg
+            class="w-5 h-5 text-amber-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          loadComponent vs loadChildren
+        </h2>
+        <p class="text-amber-800">
+          This feature uses <code class="bg-amber-100 px-1.5 py-0.5 rounded text-sm font-mono">loadChildren</code>
+          with a separate <code class="bg-amber-100 px-1.5 py-0.5 rounded text-sm font-mono">router.routes.ts</code>
+          file. Compare with other routes that use <code class="bg-amber-100 px-1.5 py-0.5 rounded text-sm font-mono">loadComponent</code>:
+        </p>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm text-left">
+            <thead>
+              <tr class="bg-amber-100 text-amber-900">
+                <th class="p-3 font-medium">Aspect</th>
+                <th class="p-3 font-medium">loadComponent</th>
+                <th class="p-3 font-medium">loadChildren</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-amber-200">
+              <tr class="hover:bg-amber-50">
+                <td class="p-3 font-mono text-amber-800">Use case</td>
+                <td class="p-3 text-amber-700">Single standalone component per route</td>
+                <td class="p-3 text-amber-700">Feature area with multiple child routes</td>
+              </tr>
+              <tr class="hover:bg-amber-50">
+                <td class="p-3 font-mono text-amber-800">Chunk granularity</td>
+                <td class="p-3 text-amber-700">Per-component chunks</td>
+                <td class="p-3 text-amber-700">Per-feature-group chunk</td>
+              </tr>
+              <tr class="hover:bg-amber-50">
+                <td class="p-3 font-mono text-amber-800">Route config</td>
+                <td class="p-3 text-amber-700">Inline in parent routes</td>
+                <td class="p-3 text-amber-700">Separate Routes file (colocated)</td>
+              </tr>
+              <tr class="hover:bg-amber-50">
+                <td class="p-3 font-mono text-amber-800">Guards/resolvers</td>
+                <td class="p-3 text-amber-700">Per-route in parent</td>
+                <td class="p-3 text-amber-700">Defined in child routes file</td>
+              </tr>
+              <tr class="hover:bg-amber-50">
+                <td class="p-3 font-mono text-amber-800">Best for</td>
+                <td class="p-3 text-amber-700">Leaf routes, simple pages</td>
+                <td class="p-3 text-amber-700">Feature modules, nested routes</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="p-3 bg-amber-100 rounded-lg text-amber-900 text-sm">
+          <strong>Network tab verification:</strong> Navigate to <code class="font-mono">/router</code> and check the Network tab —
+          you'll see a single chunk containing all router child routes loaded together.
         </div>
       </div>
     </section>
