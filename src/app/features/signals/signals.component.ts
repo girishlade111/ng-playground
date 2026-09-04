@@ -188,6 +188,9 @@ import { isPlatformBrowser } from '@angular/common';
         plain signal is bound directly to an
         <code class="rounded bg-slate-100 px-1"><input></code> with no
         <code class="rounded bg-slate-100 px-1">FormsModule</code>.
+        Angular 18 does not have <code class="rounded bg-slate-100 px-1">linkedSignal()</code> — this
+        demonstrates the equivalent pattern manually. Upgrade to Angular 19+ to use native
+        <code class="rounded bg-slate-100 px-1">linkedSignal()</code>.
       </p>
 
       <div class="rounded-xl bg-white p-6 shadow-md space-y-5">
