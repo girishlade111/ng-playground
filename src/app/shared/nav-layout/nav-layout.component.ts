@@ -99,7 +99,9 @@ interface NavItem {
   `,
 })
 export default class NavLayoutComponent {
+  private readonly darkMode = inject(DarkModeService);
   protected readonly open = signal(false);
+  protected readonly isDark = this.darkMode.isDark;
 
   protected readonly navItems: readonly NavItem[] = [
     { path: '/signals', label: 'Signals' },
