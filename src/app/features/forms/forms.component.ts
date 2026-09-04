@@ -1,7 +1,8 @@
 import { Component, signal } from '@angular/core';
-import { ReactiveFormsModule, FormBuilder, Validators, FormGroup, FormArray } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, Validators, FormGroup, FormArray, AbstractControl, ValidationErrors } from '@angular/forms';
 import { FormsModule, NgForm } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { debounceTime, switchMap, timer, of, map, catchError } from 'rxjs';
 
 @Component({
   selector: 'app-forms',
