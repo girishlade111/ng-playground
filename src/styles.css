@@ -132,9 +132,6 @@
   .tile { border-radius: 0; padding-top: 80px; padding-bottom: 80px; }
   .tile-light { background-color: #ffffff; color: #1d1d1f; }
   .tile-parchment { background-color: #f5f5f7; color: #1d1d1f; }
-  .tile-dark { background-color: #272729; color: #ffffff; }
-  .tile-dark-2 { background-color: #2a2a2c; color: #ffffff; }
-  .tile-dark-3 { background-color: #252527; color: #ffffff; }
 
   /* ---- Store utility card (white, hairline, 18px, 24px — never shadowed) ---- */
   .card-utility {
