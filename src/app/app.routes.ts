@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 import { accessGuard } from './shared/services/access.guard';
-import { taskResolver } from './features/router/task.resolver';
 
 export const routes: Routes = [
   {
@@ -50,25 +49,8 @@ export const routes: Routes = [
   },
   {
     path: 'router',
-    loadComponent: () => import('./features/router/router.component'),
+    loadChildren: () => import('./features/router/router.routes').then(m => m.ROUTER_ROUTES),
     title: 'Router · ng-playground',
-  },
-  {
-    path: 'router/protected',
-    loadComponent: () => import('./features/router/protected.component'),
-    canActivate: [accessGuard],
-    title: 'Protected Route · ng-playground',
-  },
-  {
-    path: 'router/denied',
-    loadComponent: () => import('./features/router/access-denied.component'),
-    title: 'Access Denied · ng-playground',
-  },
-  {
-    path: 'router/task/:id',
-    loadComponent: () => import('./features/router/task-detail.component'),
-    resolve: { task: taskResolver },
-    title: 'Task Detail · ng-playground',
   },
   {
     path: 'animations',

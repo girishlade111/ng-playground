@@ -1,11 +1,12 @@
 import { Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { DatePipe } from '@angular/common';
 import { Task } from '../../shared/services/task.model';
 
 @Component({
   selector: 'app-task-detail',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, DatePipe],
   template: `
     <section class="space-y-6 max-w-3xl mx-auto">
       <header>

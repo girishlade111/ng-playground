@@ -24,7 +24,7 @@ import { Task } from '../../shared/services/task.model';
       <!-- Demo 1: Route Transition (Tab Switch) -->
       <section class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
         <h2 class="text-xl font-semibold text-slate-900 mb-4">Route Transition (Tab Switch)</h2>
-        <p class="text-slate-600 mb-4">Fade + slide transition between two tab views using <code>@angular/animations</code>.</p>
+        <p class="text-slate-600 mb-4">Fade + slide transition between two tab views using <code>&#64;angular/animations</code>.</p>
 
         <div class="flex gap-2 mb-4 border-b border-slate-200">
           <button
