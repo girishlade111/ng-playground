@@ -420,4 +420,37 @@ export default class RxjsComponent implements OnInit {
       return next.length > 10 ? next.slice(next.length - 10) : next;
     });
   }
+
+  protected getStatusClass(status: Task['status']): string {
+    const base = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium';
+    switch (status) {
+      case 'done':
+        return `${base} bg-green-100 text-green-800`;
+      case 'in-progress':
+        return `${base} bg-yellow-100 text-yellow-800`;
+      case 'todo':
+      default:
+        return `${base} bg-slate-100 text-slate-800`;
+    }
+  }
+
+  protected formatStatus(status: Task['status']): string {
+    switch (status) {
+      case 'in-progress':
+        return 'In Progress';
+      case 'todo':
+        return 'To Do';
+      case 'done':
+        return 'Done';
+    }
+  }
+
+  protected formatDate(date: Date | string): string {
+    const d = new Date(date);
+    return d.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
+  }
 }
