@@ -198,8 +198,6 @@
 /* Headlines are ink, never accent (DESIGN.md Do #2). */
 main h1.text-indigo-600 { color: #1d1d1f; letter-spacing: -0.374px; }
 main h2.text-indigo-600 { color: #1d1d1f; letter-spacing: -0.374px; }
-.dark main h1.text-indigo-600 { color: #ffffff; }
-.dark main h2.text-indigo-600 { color: #ffffff; }
 
 /* Primary demo controls read as Apple pills. */
 main button[class*="bg-indigo-600"],
