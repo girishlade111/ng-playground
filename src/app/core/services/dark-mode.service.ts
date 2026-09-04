@@ -3,7 +3,7 @@ import { Injectable, signal, effect } from '@angular/core';
 @Injectable({ providedIn: 'root' })
 export class DarkModeService {
   private readonly STORAGE_KEY = 'dark-mode';
-  protected readonly isDark = signal(false);
+  readonly isDark = signal(false);
 
   constructor() {
     const saved = localStorage.getItem(this.STORAGE_KEY);
