@@ -116,42 +116,90 @@ import { ToastService } from '../../core/services/toast.service';
               </thead>
               <tbody class="divide-y divide-slate-200">
                 @for (task of tasks(); track task.id) {
-                  <tr class="hover:bg-slate-50 transition-colors">
-                    <td class="px-4 py-3 text-sm font-mono text-slate-500">{{ task.id }}</td>
-                    <td class="px-4 py-3 text-sm font-medium text-slate-900">{{ task.title }}</td>
-                    <td class="px-4 py-3">
-                      <span [class]="getStatusClass(task.status)" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium">
-                        {{ formatStatus(task.status) }}
-                      </span>
-                    </td>
-                    <td class="px-4 py-3 text-sm text-slate-500">{{ formatDate(task.createdAt) }}</td>
-                    <td class="px-4 py-3">
-                      <div class="flex items-center gap-2">
-                        <button
-                          type="button"
-                          class="text-indigo-600 hover:text-indigo-900 text-sm font-medium"
-                          (click)="onEdit(task)"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          type="button"
-                          class="text-red-600 hover:text-red-900 text-sm font-medium"
-                          (click)="onDelete(task)"
-                          [disabled]="deleting() === task.id"
-                        >
-                          @if (deleting() === task.id) {
-                            <svg class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24" aria-hidden="true">
-                              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
-                              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                            </svg>
-                          } @else {
-                            Delete
+                  @if (editing() === task.id) {
+                    <tr class="bg-indigo-50">
+                      <td class="px-4 py-3 text-sm font-mono text-slate-500">{{ task.id }}</td>
+                      <td class="px-4 py-3">
+                        <form [formGroup]="editForm" (ngSubmit)="onSaveEdit(task)" class="space-y-2">
+                          <input
+                            type="text"
+                            formControlName="title"
+                            class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-colors"
+                          />
+                          @if (editForm.get('title')?.invalid && editForm.get('title')?.touched) {
+                            <p class="text-xs text-red-600">Title is required (max 100 characters)</p>
                           }
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
+                          <textarea
+                            formControlName="description"
+                            rows="2"
+                            class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-colors"
+                          ></textarea>
+                          <select
+                            formControlName="status"
+                            class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-colors"
+                          >
+                            <option value="todo">To Do</option>
+                            <option value="in-progress">In Progress</option>
+                            <option value="done">Done</option>
+                          </select>
+                          <div class="flex items-center gap-2 pt-1">
+                            <button
+                              type="submit"
+                              [disabled]="editForm.invalid"
+                              class="inline-flex items-center justify-center gap-2 rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            >
+                              Save
+                            </button>
+                            <button
+                              type="button"
+                              (click)="onCancelEdit()"
+                              class="inline-flex items-center justify-center gap-2 rounded-md bg-slate-200 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 transition-colors"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </form>
+                      </td>
+                      <td colspan="3" class="px-4 py-3"></td>
+                    </tr>
+                  } @else {
+                    <tr class="hover:bg-slate-50 transition-colors">
+                      <td class="px-4 py-3 text-sm font-mono text-slate-500">{{ task.id }}</td>
+                      <td class="px-4 py-3 text-sm font-medium text-slate-900">{{ task.title }}</td>
+                      <td class="px-4 py-3">
+                        <span [class]="getStatusClass(task.status)" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium">
+                          {{ formatStatus(task.status) }}
+                        </span>
+                      </td>
+                      <td class="px-4 py-3 text-sm text-slate-500">{{ formatDate(task.createdAt) }}</td>
+                      <td class="px-4 py-3">
+                        <div class="flex items-center gap-2">
+                          <button
+                            type="button"
+                            class="text-indigo-600 hover:text-indigo-900 text-sm font-medium"
+                            (click)="onEdit(task)"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            type="button"
+                            class="text-red-600 hover:text-red-900 text-sm font-medium"
+                            (click)="onDelete(task)"
+                            [disabled]="deleting() === task.id"
+                          >
+                            @if (deleting() === task.id) {
+                              <svg class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                              </svg>
+                            } @else {
+                              Delete
+                            }
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  }
                 } @empty {
                   <tr>
                     <td colspan="5" class="px-4 py-8 text-center text-slate-500">
