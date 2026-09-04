@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { NgClass } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { DarkModeService } from '../../../core/services/dark-mode.service';
+import { DarkModeService } from '../../core/services/dark-mode.service';
 
 interface NavItem {
   readonly path: string;
@@ -118,7 +118,7 @@ interface NavItem {
   `,
 })
 export default class NavLayoutComponent {
-  private readonly darkMode = inject(DarkModeService);
+  protected readonly darkMode = inject(DarkModeService);
   protected readonly open = signal(false);
   protected readonly isDark = this.darkMode.isDark;
 
