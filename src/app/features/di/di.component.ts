@@ -20,7 +20,6 @@ export const APP_CONFIG = new InjectionToken<AppConfig>('app.config', {
     <div class="p-4 rounded-lg border-2" [class.border-indigo-500]="isParent()" [class.border-emerald-500]="isChild()" [class.border-amber-500]="isRoot()">
       <h3 class="font-semibold text-lg mb-2">{{ label() }}</h3>
       <div class="space-y-1 text-sm font-mono">
-        <div><span class="font-medium">Theme:</span> {{ config.theme }}</div>
         <div><span class="font-medium">API URL:</span> {{ config.apiUrl }}</div>
         <div><span class="font-medium">Version:</span> {{ config.version }}</div>
       </div>
