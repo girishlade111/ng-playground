@@ -21,7 +21,7 @@ import { HeavyTimerComponent } from './heavy-timer.component';
             Scroll down...
           </div>
 
-          @defer (on viewport) {
+          @defer (on viewport; when retryViewport) {
             <app-heavy-viewport />
           } @placeholder {
             <div class="rounded-lg border-2 border-dashed border-indigo-300 p-6 bg-indigo-50 text-center">
@@ -52,7 +52,7 @@ import { HeavyTimerComponent } from './heavy-timer.component';
           <h2 class="text-xl font-semibold text-slate-800">Trigger: on idle</h2>
           <p class="text-slate-600">Loads when the browser is idle (requestIdleCallback). No scroll needed.</p>
 
-          @defer (on idle) {
+          @defer (on idle; when retryIdle) {
             <app-heavy-idle />
           } @placeholder {
             <div class="rounded-lg border-2 border-dashed border-emerald-300 p-6 bg-emerald-50 text-center">
@@ -79,7 +79,7 @@ import { HeavyTimerComponent } from './heavy-timer.component';
           <h2 class="text-xl font-semibold text-slate-800">Trigger: on timer(3s)</h2>
           <p class="text-slate-600">Loads automatically after 3 seconds regardless of scroll or idle state.</p>
 
-          @defer (on timer(3s)) {
+          @defer (on timer(3s); when retryTimer) {
             <app-heavy-timer />
           } @placeholder {
             <div class="rounded-lg border-2 border-dashed border-amber-300 p-6 bg-amber-50 text-center">

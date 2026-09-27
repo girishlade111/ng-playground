@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal, computed, effect } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ToastService } from '../../../core/services/toast.service';
 import { ToastMessage } from '../../../core/models/toast.model';
@@ -9,10 +9,10 @@ import { ToastMessage } from '../../../core/models/toast.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule],
   template: `
-    <div class="fixed top-[60px] right-4 z-50 flex flex-col gap-2 w-full max-w-sm pointer-events-none">
+    <div class="fixed top-[60px] right-4 left-4 sm:left-auto z-50 flex flex-col gap-2 w-auto sm:w-full sm:max-w-sm pointer-events-none">
       @for (toast of toastService.toasts(); track toast.id) {
         <div
-          class="pointer-events-auto animate-slide-in rounded-[18px] border border-black/10 bg-white/90 overflow-hidden backdrop-blur-xl"
+          class="relative pointer-events-auto animate-slide-in rounded-[18px] border border-black/10 bg-white/90 overflow-hidden backdrop-blur-xl"
           role="alert"
           aria-live="polite"
         >
@@ -36,8 +36,8 @@ import { ToastMessage } from '../../../core/models/toast.model';
               </svg>
             </div>
             <div class="flex-1 min-w-0">
-              <p class="text-sm font-medium" [class]="getTitleClasses(toast.type)">{{ toast.title }}</p>
-              <p class="mt-1 text-sm" [class]="getMessageClasses(toast.type)">{{ toast.message }}</p>
+              <p class="text-sm font-medium" [class]="getTitleClasses()">{{ toast.title }}</p>
+              <p class="mt-1 text-sm" [class]="getMessageClasses()">{{ toast.message }}</p>
             </div>
             <button
               type="button"
@@ -94,11 +94,6 @@ export class ToastContainerComponent {
     this.toastService.dismiss(id);
   }
 
-  protected getToastClasses(type: ToastMessage['type']): string {
-    // Frosted white card for every tone; the icon carries the signal color.
-    return 'rounded-[18px] border border-black/10 bg-white/90 backdrop-blur-xl';
-  }
-
   protected getIconClasses(type: ToastMessage['type']): string {
     switch (type) {
       case 'error':
@@ -113,11 +108,11 @@ export class ToastContainerComponent {
     }
   }
 
-  protected getTitleClasses(type: ToastMessage['type']): string {
+  protected getTitleClasses(): string {
     return 'text-ink text-[17px] font-semibold tracking-[-0.374px]';
   }
 
-  protected getMessageClasses(type: ToastMessage['type']): string {
+  protected getMessageClasses(): string {
     return 'text-ink-soft text-[14px] tracking-[-0.224px]';
   }
 

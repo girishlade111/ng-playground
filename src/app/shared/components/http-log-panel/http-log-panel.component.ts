@@ -1,8 +1,7 @@
-import { ChangeDetectionStrategy, Component, inject, signal, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpLogService } from '../../../core/services/http-log.service';
 import { ToastService } from '../../../core/services/toast.service';
-import { HttpLogEntry } from '../../../core/models/http-log.model';
 
 @Component({
   selector: 'app-http-log-panel',
@@ -10,7 +9,7 @@ import { HttpLogEntry } from '../../../core/models/http-log.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule],
   template: `
-    <div class="fixed bottom-4 right-4 z-50 w-full max-w-2xl px-4 sm:px-0">
+    <div class="fixed bottom-4 right-4 left-4 sm:left-auto z-50 w-auto sm:w-full sm:max-w-2xl">
       <div class="rounded-[18px] bg-white border border-black/10 overflow-hidden">
         <div class="frosted-parchment flex items-center justify-between border-b border-black/[0.08] px-4 py-3">
           <h2 class="text-[14px] font-semibold tracking-[-0.224px] text-ink">HTTP Request Log</h2>

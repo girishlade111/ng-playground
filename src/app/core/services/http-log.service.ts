@@ -21,17 +21,16 @@ export class HttpLogService {
     this._entries().filter((e) => typeof e.status === 'number' && e.status >= 200 && e.status < 400).length
   );
 
-  addEntry(entry: HttpLogEntry): void {
-    this._entries.update((entries) => [...entries, entry]);
+  addEntry(entry: Omit<HttpLogEntry, 'id'>): string {
+    const id = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+    this._entries.update((entries) => [...entries, { ...entry, id }]);
+    return id;
   }
 
-  updateLastEntry(partial: Partial<HttpLogEntry>): void {
-    this._entries.update((entries) => {
-      if (entries.length === 0) return entries;
-      const updated = [...entries];
-      updated[updated.length - 1] = { ...updated[updated.length - 1], ...partial };
-      return updated;
-    });
+  updateEntry(id: string, partial: Partial<HttpLogEntry>): void {
+    this._entries.update((entries) =>
+      entries.map((entry) => (entry.id === id ? { ...entry, ...partial } : entry))
+    );
   }
 
   clear(): void {

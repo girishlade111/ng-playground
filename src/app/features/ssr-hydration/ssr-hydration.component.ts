@@ -25,17 +25,17 @@ const DATA_KEY = makeStateKey<{ message: string; timestamp: string }>('ssr-data'
 
       <div class="rounded-xl border bg-white p-6 shadow-sm space-y-4">
         <div class="space-y-2">
-          <label class="text-sm font-medium text-slate-700">Server Data:</label>
+          <span class="block text-sm font-medium text-slate-700">Server Data:</span>
           <p class="font-mono text-lg text-slate-900">{{ data()?.message }}</p>
         </div>
 
         <div class="space-y-2">
-          <label class="text-sm font-medium text-slate-700">Rendered at:</label>
+          <span class="block text-sm font-medium text-slate-700">Rendered at:</span>
           <p class="font-mono text-lg text-slate-900">{{ data()?.timestamp }}</p>
         </div>
 
         <div class="pt-4 border-t border-slate-200">
-          <label class="text-sm font-medium text-slate-700">Hydration Status:</label>
+          <span class="block text-sm font-medium text-slate-700">Hydration Status:</span>
           <div class="mt-2 flex items-center gap-3">
             <span
               class="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-medium transition-colors"

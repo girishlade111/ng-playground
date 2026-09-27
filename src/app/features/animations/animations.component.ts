@@ -1,13 +1,11 @@
 import { Component } from '@angular/core';
 import {
   trigger,
-  state,
   style,
   animate,
   transition,
   query,
   stagger,
-  group,
 } from '@angular/animations';
 import { Task } from '../../shared/services/task.model';
 

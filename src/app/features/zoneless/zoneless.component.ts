@@ -329,13 +329,16 @@ export const appConfig: ApplicationConfig = {
 
   constructor() {
     const platformId = inject(PLATFORM_ID);
-    effect(() => {
-      if (!isPlatformBrowser(platformId)) return;
-      const value = this.count();
-      this.effectLog.update((current) => [
-        ...current,
-        { timestamp: new Date().toISOString().slice(11, 23), value },
-      ]);
-    });
+    effect(
+      () => {
+        if (!isPlatformBrowser(platformId)) return;
+        const value = this.count();
+        this.effectLog.update((current) => [
+          ...current,
+          { timestamp: new Date().toISOString().slice(11, 23), value },
+        ]);
+      },
+      { allowSignalWrites: true },
+    );
   }
 }

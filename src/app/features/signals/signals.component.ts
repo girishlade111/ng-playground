@@ -359,26 +359,32 @@ export default class SignalsComponent {
   constructor() {
     const platformId = inject(PLATFORM_ID);
     // linkedSignal pattern (manual in Angular 18): reset shipping when country changes
-    effect(() => {
-      if (!isPlatformBrowser(platformId)) return;
-      const options = this.availableShipping();
-      this.shipping.set(options[0]?.id ?? '');
-    });
+    effect(
+      () => {
+        if (!isPlatformBrowser(platformId)) return;
+        const options = this.availableShipping();
+        this.shipping.set(options[0]?.id ?? '');
+      },
+      { allowSignalWrites: true },
+    );
 
     // fullName effect for log
     let firstRun = true;
-    effect(() => {
-      if (!isPlatformBrowser(platformId)) return;
-      const value = this.fullName();
-      if (firstRun) {
-        firstRun = false;
-        return;
-      }
-      this.log.update((current) => [
-        ...current,
-        { timestamp: new Date().toISOString().slice(11, 23), value },
-      ]);
-    });
+    effect(
+      () => {
+        if (!isPlatformBrowser(platformId)) return;
+        const value = this.fullName();
+        if (firstRun) {
+          firstRun = false;
+          return;
+        }
+        this.log.update((current) => [
+          ...current,
+          { timestamp: new Date().toISOString().slice(11, 23), value },
+        ]);
+      },
+      { allowSignalWrites: true },
+    );
   }
 
   protected clearLog(): void {

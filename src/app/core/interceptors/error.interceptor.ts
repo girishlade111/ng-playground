@@ -11,7 +11,9 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
       let title = 'Request Failed';
       let message = 'An unexpected error occurred';
 
-      if (error.error instanceof ErrorEvent) {
+      // ErrorEvent is a browser-only API — guard it so this interceptor
+      // also runs during SSR (Node.js has no ErrorEvent global).
+      if (typeof ErrorEvent !== 'undefined' && error.error instanceof ErrorEvent) {
         title = 'Network Error';
         message = `Network error: ${error.error.message}`;
       } else {
@@ -34,7 +36,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
             break;
           case 404:
             title = 'Not Found';
-            message = 'The requested resource was not found.';
+            message = error.error?.message || 'The requested resource was not found.';
             break;
           case 409:
             title = 'Conflict';
@@ -46,7 +48,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
             break;
           case 500:
             title = 'Server Error';
-            message = 'An internal server error occurred. Please try again later.';
+            message = error.error?.message || 'An internal server error occurred. Please try again later.';
             break;
           case 503:
             title = 'Service Unavailable';

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal, computed, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { TaskApiService } from '../../shared/services/task-api.service';
@@ -278,6 +278,7 @@ export default class CrudComponent implements OnInit {
         this.tasks.update((current) => [newTask, ...current]);
         this.createForm.reset({ title: '', description: '', status: 'todo' });
         this.creating.set(false);
+        this.toast.success('Task created', `"${newTask.title}" has been added.`);
       },
       error: (err) => {
         this.error.set(err.message);
@@ -339,6 +340,7 @@ export default class CrudComponent implements OnInit {
       next: () => {
         this.tasks.update((current) => current.filter((t) => t.id !== task.id));
         this.deleting.set(null);
+        this.toast.success('Task deleted', `"${task.title}" has been removed.`);
       },
       error: (err) => {
         this.error.set(err.message);

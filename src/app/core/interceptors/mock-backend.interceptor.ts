@@ -1,5 +1,5 @@
-import { HttpInterceptorFn, HttpRequest, HttpResponse, HttpEvent } from '@angular/common/http';
-import { Observable, of, throwError, delay } from 'rxjs';
+import { HttpInterceptorFn, HttpResponse, HttpEvent, HttpErrorResponse } from '@angular/common/http';
+import { Observable, of, throwError, delay, timer, mergeMap } from 'rxjs';
 import { Task } from '../../shared/services/task.model';
 
 const API_PREFIX = '/api/tasks';
@@ -71,12 +71,12 @@ function simulateDelay(): number {
   return 300 + Math.random() * 500;
 }
 
-function shouldSimulateError(): boolean {
-  return Math.random() < 0.1;
-}
-
 function createErrorResponse(message: string, status = 500): Observable<never> {
-  return throwError(() => new Error(message)).pipe(delay(simulateDelay()));
+  const makeError = () =>
+    new HttpErrorResponse({ status, statusText: message, error: { message }, url: API_PREFIX });
+  // Note: delay() does not delay error notifications — timer() + mergeMap
+  // keeps the simulated latency honest for failures too.
+  return timer(simulateDelay()).pipe(mergeMap(() => throwError(makeError)));
 }
 
 export const mockBackendInterceptor: HttpInterceptorFn = (req, next) => {
@@ -110,16 +110,10 @@ export const mockBackendInterceptor: HttpInterceptorFn = (req, next) => {
   }
 
   function handleGetAll(): Observable<HttpEvent<Task[]>> {
-    if (shouldSimulateError()) {
-      return createErrorResponse('Failed to fetch tasks. Please try again.');
-    }
     return of(new HttpResponse({ status: 200, body: [...mockTasks] })).pipe(delay(simulateDelay()));
   }
 
   function handleGetById(taskId: string): Observable<HttpEvent<Task>> {
-    if (shouldSimulateError()) {
-      return createErrorResponse(`Failed to fetch task ${taskId}. Please try again.`);
-    }
     const task = mockTasks.find((t) => t.id === taskId);
     if (!task) {
       return createErrorResponse(`Task with id ${taskId} not found`, 404);
@@ -128,9 +122,6 @@ export const mockBackendInterceptor: HttpInterceptorFn = (req, next) => {
   }
 
   function handleCreate(taskData: Omit<Task, 'id' | 'createdAt'>): Observable<HttpEvent<Task>> {
-    if (shouldSimulateError()) {
-      return createErrorResponse('Failed to create task. Please try again.');
-    }
     const newTask: Task = {
       ...taskData,
       id: generateId(),
@@ -144,9 +135,6 @@ export const mockBackendInterceptor: HttpInterceptorFn = (req, next) => {
     taskId: string,
     updates: Partial<Omit<Task, 'id' | 'createdAt'>>
   ): Observable<HttpEvent<Task>> {
-    if (shouldSimulateError()) {
-      return createErrorResponse('Failed to update task. Please try again.');
-    }
     const index = mockTasks.findIndex((t) => t.id === taskId);
     if (index === -1) {
       return createErrorResponse(`Task with id ${taskId} not found`, 404);
@@ -157,9 +145,6 @@ export const mockBackendInterceptor: HttpInterceptorFn = (req, next) => {
   }
 
   function handleDelete(taskId: string): Observable<HttpEvent<void>> {
-    if (shouldSimulateError()) {
-      return createErrorResponse('Failed to delete task. Please try again.');
-    }
     const index = mockTasks.findIndex((t) => t.id === taskId);
     if (index === -1) {
       return createErrorResponse(`Task with id ${taskId} not found`, 404);

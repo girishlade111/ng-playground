@@ -1,8 +1,8 @@
 import { Component, signal } from '@angular/core';
-import { ReactiveFormsModule, FormBuilder, Validators, FormGroup, FormArray, AbstractControl, ValidationErrors } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, Validators, FormGroup, FormArray, AbstractControl } from '@angular/forms';
 import { FormsModule, NgForm } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { debounceTime, switchMap, timer, of, map, catchError } from 'rxjs';
+import { switchMap, timer, of, map, catchError } from 'rxjs';
 
 @Component({
   selector: 'app-forms',
@@ -16,7 +16,7 @@ import { debounceTime, switchMap, timer, of, map, catchError } from 'rxjs';
       </header>
 
       <!-- Tab Navigation -->
-      <div class="flex border-b border-slate-200" role="tablist">
+      <div class="flex border-b border-slate-200 overflow-x-auto" role="tablist">
         <button
           role="tab"
           [attr.aria-selected]="activeTab() === 'reactive'"
@@ -336,16 +336,16 @@ import { debounceTime, switchMap, timer, of, map, catchError } from 'rxjs';
                 [class.border-green-500]="asyncUsernameStatus() === 'available'"
                 [class.border-red-500]="asyncUsernameStatus() === 'taken' || (asyncForm.get('username')?.invalid && asyncForm.get('username')?.touched && asyncUsernameStatus() !== 'checking')"
                 [class.border-slate-300]="asyncUsernameStatus() === 'idle' && !(asyncForm.get('username')?.invalid && asyncForm.get('username')?.touched)"
-                aria-describedby="async-username-error async-username-status"
+                aria-describedby="async-username-error-required async-username-error-minlength async-username-error-taken async-username-status"
               />
               @if (asyncForm.get('username')?.errors?.['required'] && asyncForm.get('username')?.touched) {
-                <p id="async-username-error" class="mt-1 text-sm text-red-600" role="alert">Username is required</p>
+                <p id="async-username-error-required" class="mt-1 text-sm text-red-600" role="alert">Username is required</p>
               }
               @if (asyncForm.get('username')?.errors?.['minlength'] && asyncForm.get('username')?.touched) {
-                <p id="async-username-error" class="mt-1 text-sm text-red-600" role="alert">Username must be at least 3 characters</p>
+                <p id="async-username-error-minlength" class="mt-1 text-sm text-red-600" role="alert">Username must be at least 3 characters</p>
               }
               @if (asyncForm.get('username')?.errors?.['usernameTaken']) {
-                <p id="async-username-error" class="mt-1 text-sm text-red-600" role="alert">This username is already taken</p>
+                <p id="async-username-error-taken" class="mt-1 text-sm text-red-600" role="alert">This username is already taken</p>
               }
 
               <div id="async-username-status" class="mt-2 flex items-center gap-2" role="status" aria-live="polite">
@@ -541,13 +541,16 @@ export default class FormsComponent {
 
     this.asyncUsernameStatus.set('checking');
 
-    return of(value).pipe(
-      debounceTime(300),
-      switchMap((val) => {
+    // NOTE: of(value).pipe(debounceTime(300)) would NOT debounce — debounceTime
+    // flushes immediately when a synchronous single-emission observable completes.
+    // timer(300) is a real 300ms pause; Angular unsubscribes on each keystroke,
+    // so rapid typing cancels the pending check (same cancellation semantics).
+    return timer(300).pipe(
+      switchMap(() => {
         this.asyncValidatorCallCount.update((count) => count + 1);
         return timer(800).pipe(
           map(() => {
-            const isTaken = this.takenUsernames.includes(val.toLowerCase());
+            const isTaken = this.takenUsernames.includes(value.toLowerCase());
             this.asyncUsernameStatus.set(isTaken ? 'taken' : 'available');
             return isTaken ? { usernameTaken: true } : null;
           })

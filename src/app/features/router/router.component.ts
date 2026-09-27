@@ -1,11 +1,11 @@
-﻿﻿﻿import { Component, inject } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AccessControlService } from '../../shared/services/access-control.service';
 
 @Component({
   selector: 'app-router',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, RouterLinkActive],
   template: `
     <section class="space-y-6">
       <header>

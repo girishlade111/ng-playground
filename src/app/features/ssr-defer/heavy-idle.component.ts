@@ -1,4 +1,4 @@
-import { Component, effect, signal } from '@angular/core';
+import { Component, DestroyRef, effect, inject, OnInit, signal } from '@angular/core';
 
 @Component({
   selector: 'app-heavy-idle',
@@ -16,17 +16,27 @@ import { Component, effect, signal } from '@angular/core';
     </div>
   `,
 })
-export class HeavyIdleComponent {
+export class HeavyIdleComponent implements OnInit {
   count = signal(0);
   initDelay = 0;
   constructorDelay = 0;
+  private intervalId?: ReturnType<typeof setInterval>;
 
   constructor() {
+    const destroyRef = inject(DestroyRef);
     const start = performance.now();
     // Simulate heavy constructor work
     this.heavyComputation(50);
     this.constructorDelay = Math.round(performance.now() - start);
     console.log('[HeavyIdleComponent] Constructor completed');
+
+    // effect() must run in an injection context (constructor), not ngOnInit.
+    effect(() => {
+      if (this.count() > 10) {
+        this.clearTimer();
+      }
+    });
+    destroyRef.onDestroy(() => this.clearTimer());
   }
 
   ngOnInit() {
@@ -37,21 +47,23 @@ export class HeavyIdleComponent {
     console.log('[HeavyIdleComponent] ngOnInit completed');
 
     // Simulate ongoing work
-    const interval = setInterval(() => {
-      this.count.update(c => c + 1);
+    this.intervalId = setInterval(() => {
+      this.count.update((c) => c + 1);
     }, 1000);
+  }
 
-    effect(() => {
-      if (this.count() > 10) {
-        clearInterval(interval);
-      }
-    });
+  private clearTimer(): void {
+    if (this.intervalId !== undefined) {
+      clearInterval(this.intervalId);
+      this.intervalId = undefined;
+    }
   }
 
   private heavyComputation(ms: number) {
     const end = performance.now() + ms;
     while (performance.now() < end) {
-      // Busy wait to simulate CPU-intensive work
+      // Busy wait to simulate CPU-intensive work.
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       Math.random() * Math.random();
     }
   }
